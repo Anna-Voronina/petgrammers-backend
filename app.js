@@ -6,6 +6,9 @@ const fs = require("fs/promises");
 
 require("dotenv").config();
 
+const noticeRouter = require("./routes/api/notices");
+const petRouter = require("./routes/api/pets");
+
 const app = express();
 
 const formatsLogger = app.get("env") === "development" ? "dev" : "short";
@@ -14,6 +17,9 @@ app.use(logger(formatsLogger));
 app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
+
+app.use("/api/notices", noticeRouter);
+app.use("/api/pets", petRouter);
 
 app.use((req, res, next) => {
   const { method, url } = req;
