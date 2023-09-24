@@ -36,11 +36,11 @@ const petSchema = new Schema(
       type: String,
       maxlength: 120,
     },
-    // owner: {
-    //   type: Schema.Types.ObjectId,
-    //   ref: "user",
-    //   required: true,
-    // },
+    owner: {
+      type: Schema.Types.ObjectId,
+      ref: "user",
+      required: true,
+    },
   },
   { versionKey: false }
 );

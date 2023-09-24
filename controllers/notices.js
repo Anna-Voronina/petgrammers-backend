@@ -64,22 +64,20 @@ const addOwnNotice = async (req, res, next) => {
   if (error) {
     throw HttpError(400, error.message);
   }
-  // const { id: owner } = req.user;
-
+  const { id: owner } = req.user;
   const { path: filePath } = req.file;
   const { url: file } = await cloudinary.uploader.upload(filePath, {
     folder: "notices",
   });
-
   await fs.unlink(filePath);
-
-  const data = await Notice.create({ ...req.body, file });
+  const data = await Notice.create({ ...req.body, file, owner });
   res.status(201).json(data);
 };
 
 //Отримання всіх власних оголошень
 const getAllOwnNotices = async (req, res, next) => {
-  const data = await Notice.find();
+  const { _id: owner } = req.user;
+  const data = await Notice.find({ owner });
   res.json(data);
 };
 

@@ -8,6 +8,7 @@ require("dotenv").config();
 
 const noticeRouter = require("./routes/api/notices");
 const petRouter = require("./routes/api/pets");
+const userInfoRouter = require("./routes/api/userInfo");
 
 const app = express();
 
@@ -22,6 +23,7 @@ app.use(express.static("public"));
 
 app.use("/api/notices", noticeRouter);
 app.use("/api/pets", petRouter);
+app.use("/api/user-info", userInfoRouter);
 
 app.use((req, res, next) => {
   const { method, url } = req;
