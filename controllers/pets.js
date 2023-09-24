@@ -9,7 +9,7 @@ const addOwnPet = async (req, res, next) => {
   if (error) {
     throw HttpError(400, error.message);
   }
-
+  const { id: owner } = req.user;
   const { path: filePath } = req.file;
   const { url: file } = await cloudinary.uploader.upload(filePath, {
     folder: "pets",
@@ -17,7 +17,7 @@ const addOwnPet = async (req, res, next) => {
 
   await fs.unlink(filePath);
 
-  const data = await Pet.create({ ...req.body, file });
+  const data = await Pet.create({ ...req.body, file, owner });
   res.status(200).json(data);
 };
 
@@ -32,7 +32,10 @@ const deleteOwnPet = async (req, res, next) => {
   res.status(204).json(data);
 };
 
+const getUserWithPets = async (req, res, next) => {};
+
 module.exports = {
   addOwnPet: ctrlWrapper(addOwnPet),
   deleteOwnPet: ctrlWrapper(deleteOwnPet),
+  getUserWithPets: ctrlWrapper(getUserWithPets),
 };

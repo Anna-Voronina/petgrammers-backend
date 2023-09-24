@@ -3,7 +3,7 @@ const controllers = require("../../controllers/notices");
 const router = express.Router();
 const { upload } = require("../../middlewares");
 
-const { isValidId } = require("../../middlewares");
+const { isValidId, authenticate } = require("../../middlewares");
 
 // ------- PUBLIC ------- //
 // Для пошуку оголошень по категорії
@@ -17,26 +17,24 @@ router.get("/:id", isValidId, controllers.getNoticeById);
 
 //-------AUTHENTICATE ------- //
 
-//Отримання всі обранi оголошеня
-router.get("/get/favorites", controllers.getFavorites);
-
-//Додати оголошення до обраних
-router.patch("/:id/favorite", isValidId, controllers.changeNoticeFavorites);
-
-//Видалити оголошення з обраних
-// router.patch(
-//   "/:id/remove-favorite",
-//   isValidId,
-//   controllers.deleteNoticeFromFavorites
-// );
-
 //Додати оголошення sell, in-good-hands, lost
-router.post("/", upload.single("file"), controllers.addOwnNotice);
+router.post("/", upload.single("file"), authenticate, controllers.addOwnNotice);
+
+//Додати/видалити оголошення до/з обраних
+router.patch(
+  "/:id/favorite",
+  isValidId,
+  authenticate,
+  controllers.changeNoticeFavorites
+);
+
+//Отримання всі обранi оголошеня
+router.get("/get/favorites", authenticate, controllers.getFavorites);
 
 //Отримання власних оголошень автора
-router.get("/", controllers.getAllOwnNotices);
+router.get("/", authenticate, controllers.getAllOwnNotices);
 
 //Видалити оголошення автора
-router.delete("/:id", isValidId, controllers.deleteOwnNotice);
+router.delete("/:id", authenticate, isValidId, controllers.deleteOwnNotice);
 
 module.exports = router;
