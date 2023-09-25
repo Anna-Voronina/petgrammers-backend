@@ -1,12 +1,14 @@
 const { User } = require("../models/user");
 
 const jwt = require("jsonwebtoken");
-
 const bcrypt = require("bcrypt");
-
 const { SECRET_KEY } = process.env;
 
-const { HttpError, ctrlWrapper } = require("../helpers");
+const { HttpError, ctrlWrapper, cloudinary } = require("../helpers");
+
+const jimp = require("jimp");
+
+const fs = require("fs").promises;
 
 const register = async (req, res) => {
   const { email, password } = req.body;
@@ -81,18 +83,24 @@ const editUserForm = async (req, res) => {
 };
 
 const updateAvatar = async (req, res) => {
-  const { _id } = req.user;
-  const { path: tempUpload, originalname } = req.file;
-  const imageJimp = await jimp.read(tempUpload);
-  await imageJimp.resize(250, 250).writeAsync(tempUpload);
-  const resultUpload = path.join(avatarDir, originalname);
-  const filename = `${_id}_${originalname}`;
-  await fs.rename(tempUpload, resultUpload);
-  const avatarURL = path.join("avatar", filename);
-  await User.findByIdAndUpdate(_id, { avatarURL });
+  const { _id: owner } = req.user;
+  const { path: filepath } = req.file;
+  const imageJimp = await jimp.read(filepath);
+  imageJimp.cover(182, 182).write(filepath);
+
+  const { url: avatarURL } = await cloudinary.uploader.upload(filepath, {
+    folder: "user_avatar",
+  });
+
+  await fs.unlink(filepath);
+  const result = await User.findByIdAndUpdate(
+    owner,
+    { avatarURL },
+    { new: true }
+  );
 
   res.json({
-    avatarURL,
+    result,
   });
 };
 
@@ -102,4 +110,5 @@ module.exports = {
   getCurrent: ctrlWrapper(getCurrent),
   logout: ctrlWrapper(logout),
   editUserForm: ctrlWrapper(editUserForm),
+  updateAvatar: ctrlWrapper(updateAvatar),
 };

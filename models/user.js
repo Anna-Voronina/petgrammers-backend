@@ -10,8 +10,6 @@ const passwordRegexp = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{6,16}$/;
 
 const emailRegexp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-const avatarRegexp = /\.(jpg|jpeg|png|gif)$/;
-
 const phoneRegexp = /^\+380\d{9}$/;
 
 const birthdayRegexp = /^\d{2}-\d{2}-\d{4}$/;
@@ -22,7 +20,8 @@ const userSchema = new Schema(
   {
     avatarURL: {
       type: String,
-      default: "picture",
+      default:
+        "https://res.cloudinary.com/dofau6dtf/image/upload/v1695541073/default_avatar/Photo_default_twk9o4.jpg",
     },
     name: {
       type: String,
@@ -41,11 +40,11 @@ const userSchema = new Schema(
     },
     phone: {
       type: String,
-      default: "380__.___.__.__",
+      default: "+380123456789",
     },
     birthday: {
       type: String,
-      default: "__.__.____",
+      default: "01.01.1970",
     },
     city: {
       type: String,
