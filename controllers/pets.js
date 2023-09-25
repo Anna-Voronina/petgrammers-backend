@@ -2,6 +2,7 @@ const { ctrlWrapper, HttpError, cloudinary } = require("../helpers");
 const Pet = require("../models/Pet");
 const addPetSchema = require("../schemas/pets");
 const fs = require("fs/promises");
+const jimp = require("jimp");
 
 //Add own pet
 const addOwnPet = async (req, res, next) => {
@@ -11,6 +12,10 @@ const addOwnPet = async (req, res, next) => {
   }
   const { id: owner } = req.user;
   const { path: filePath } = req.file;
+
+  const imageJimp = await jimp.read(filePath);
+  imageJimp.cover(161, 161).write(filePath);
+
   const { url: file } = await cloudinary.uploader.upload(filePath, {
     folder: "pets",
   });

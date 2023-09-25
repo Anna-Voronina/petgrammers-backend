@@ -3,6 +3,9 @@ const Notice = require("../models/Notice");
 const addNoticeSchema = require("../schemas/notices");
 
 const fs = require("fs/promises");
+const jimp = require("jimp");
+
+const { User } = require("../models/user");
 
 // створити ендпоінт для пошуку оголошень з урахуванням переданої категорії з NoticesCategoriesNav та/або параметрів з NoticesSearch (пошук по заголовку)
 const searchNotices = async (req, res, next) => {
@@ -49,13 +52,30 @@ const changeNoticeFavorites = async (req, res, next) => {
   if (!notice) {
     throw HttpError(404, "Notice is not found");
   }
+
+  if (favorite) {
+    req.user.favorites.push(id);
+  } else {
+    const index = req.user.favorites.indexOf(id);
+    if (index !== -1) {
+      req.user.favorites.splice(index, 1);
+    }
+  }
+  await req.user.save();
+
+  res.json(notice);
   res.json(notice);
 };
 
 //Отримання всіх оголошень які обрані
 const getFavorites = async (req, res, next) => {
-  const favoritesNotices = await Notice.find({ favorite: true });
-  res.json(favoritesNotices);
+  // const data = await Notice.find({ favorite: true });
+  // res.json(data);
+  const { id } = req.user;
+  const user = await User.findById(id);
+  const favoriteNoriceIds = user.favorites;
+  const favorites = await Notice.find({ _id: { $in: favoriteNoriceIds } });
+  res.json(favorites);
 };
 
 //Додати власне оголошення (не закінчено, додати owner)
@@ -66,6 +86,10 @@ const addOwnNotice = async (req, res, next) => {
   }
   const { id: owner } = req.user;
   const { path: filePath } = req.file;
+
+  const imageJimp = await jimp.read(filePath);
+  imageJimp.cover(336, 288).write(filePath);
+
   const { url: file } = await cloudinary.uploader.upload(filePath, {
     folder: "notices",
   });
@@ -88,6 +112,11 @@ const deleteOwnNotice = async (req, res, next) => {
   res.status(204).json(notice);
 };
 
+const getAllNotices = async (req, res, next) => {
+  const data = await Notice.find();
+  res.status(200).json(data);
+};
+
 module.exports = {
   addOwnNotice: ctrlWrapper(addOwnNotice),
   searchNotices: ctrlWrapper(searchNotices),
@@ -96,4 +125,5 @@ module.exports = {
   getFavorites: ctrlWrapper(getFavorites),
   getAllOwnNotices: ctrlWrapper(getAllOwnNotices),
   deleteOwnNotice: ctrlWrapper(deleteOwnNotice),
+  getAllNotices: ctrlWrapper(getAllNotices),
 };

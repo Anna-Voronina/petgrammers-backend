@@ -50,7 +50,7 @@ const login = async (req, res) => {
 };
 
 const getCurrent = async (req, res) => {
-  const { avatarURL, name, email, phone, birthday, city } = req.user;
+  const { avatarURL, name, email, phone, birthday, city, favorites } = req.user;
   res.json({
     avatarURL,
     name,
@@ -58,6 +58,7 @@ const getCurrent = async (req, res) => {
     phone,
     birthday,
     city,
+    favorites,
   });
 };
 
