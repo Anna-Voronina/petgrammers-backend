@@ -92,8 +92,6 @@ const updateAvatar = async (req, res) => {
     folder: "user_avatar",
   });
 
-  console.log(filepath);
-
   await fs.unlink(filepath);
   const result = await User.findByIdAndUpdate(
     owner,
