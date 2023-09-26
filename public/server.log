@@ -254,3 +254,26 @@ GET /api-docs/swagger-ui.css 26-09-23_10:40:44
 GET /api-docs/swagger-ui-bundle.js 26-09-23_10:40:44
 GET /api-docs/swagger-ui-standalone-preset.js 26-09-23_10:40:44
 GET /api-docs/swagger-ui-init.js 26-09-23_10:40:44
+GET / 25-09-23_10:34:59
+GET /search/sell 25-09-23_12:03:05
+GET /api/notices/651159ab334e087dd7426aaa/favorite 25-09-23_01:57:38
+GET /api/get/favorites 25-09-23_02:01:47
+GET /api/get/favorites 25-09-23_02:01:49
+
+POST /auth/current 25-09-23_02:26:12
+GET /auth/current 25-09-23_02:26:17
+GET /auth/current 25-09-23_02:26:19
+POST /api/notice/ 25-09-23_02:26:35
+POST /api/notice/ 25-09-23_02:28:20
+POST /api/notices/get/favorites 25-09-23_02:31:51
+GET /api/notices/651170abe56b91f89e97e9e7/favorite 25-09-23_02:46:36
+PATCH /api/auth/current 25-09-23_02:46:54
+GET /api/notices/651170abe56b91f89e97e9e7/favorite 25-09-23_02:48:16
+GET /api/notices/650fea17edbba2788fcb5f23/favorite 25-09-23_02:53:35
+PATCH /api/auth/current 25-09-23_03:00:09
+GET /api/get/all 25-09-23_04:05:33
+PATCH /api/notices/650fea17edbba2788fcb5f23/favorites 25-09-23_04:31:33
+PATCH /api/notices/650fea17edbba2788fcb5f23/favorites 25-09-23_04:31:40
+PATCH /api/notices/get/all 25-09-23_04:31:44
+PATCH /api/notices/650fea17edbba2788fcb5f23/favorites 25-09-23_04:32:00
+PATCH /api/notices/get/favorites 25-09-23_04:52:27

@@ -1,0 +1,1062 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "version": "2.0.2",
+    "title": "Swagger pets",
+    "description": "Pets API",
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "consumes": ["application/json"],
+  "produces": ["application/json"],
+  "servers": [{ "url": "http://localhost:3000" }],
+  "tags": [
+    {
+      "name": "Auth",
+      "description": "Authorization endpoints"
+    },
+    {
+      "name": "Notices",
+      "description": "Notices endpoints"
+    },
+    {
+      "name": "Pets",
+      "description": "Pets endpoints"
+    },
+    {
+      "name": "User+Pets",
+      "description": "User and Pets endpoints"
+    }
+  ],
+  "paths": {
+    "api/auth/register": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "User registration",
+        "parameters": [],
+        "security": [{ "Bearer": [] }],
+        "requestBody": {
+          "description": "Registration's object",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegistrationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegistrationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (invalid request body)",
+            "content": {}
+          },
+          "409": {
+            "description": "Provided email already exists",
+            "content": {}
+          }
+        }
+      }
+    },
+    "api/auth/login": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "User authentication",
+        "parameters": [],
+        "security": [{ "Bearer": [] }],
+        "requestBody": {
+          "description": "Autentication's object",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegistrationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegistrationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (invalid request body)",
+            "content": {}
+          },
+          "409": {
+            "description": "Provided email already exists",
+            "content": {}
+          }
+        }
+      }
+    },
+    "api/auth/current": {
+      "get": {
+        "tags": ["Auth"],
+        "summary": "User current",
+        "parameters": [],
+        "security": [{ "Bearer": [] }],
+        "requestBody": {
+          "description": "User current object",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegistrationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegistrationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (invalid request body)",
+            "content": {}
+          },
+          "409": {
+            "description": "Provided email already exists",
+            "content": {}
+          }
+        }
+      }
+    },
+    "api/auth/editUserForm": {
+      "get": {
+        "tags": ["Auth"],
+        "summary": "Edit user information",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "path",
+            "description": "Updated user information",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "security": [{ "Bearer": [] }],
+        "requestBody": {
+          "description": "User current object",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegistrationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User information updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegistrationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (invalid request body)",
+            "content": {}
+          },
+          "409": {
+            "description": "Provided email already exists",
+            "content": {}
+          }
+        }
+      }
+    },
+    "api/auth//updateAvatar": {
+      "get": {
+        "tags": ["Auth"],
+        "summary": "Update user avatar",
+        "parameters": [
+          {
+            "name": "avatarURL",
+            "in": "formData",
+            "description": "User avatar image file",
+            "required": true,
+            "type": "file"
+          }
+        ],
+        "security": [{ "Bearer": [] }],
+        "requestBody": {
+          "description": "User current object",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegistrationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Avatar updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegistrationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (invalid request body)",
+            "content": {}
+          }
+        }
+      }
+    },
+    "api/auth/logout": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "User logout",
+        "parameters": [],
+        "security": [{ "Bearer": [] }],
+        "requestBody": {
+          "description": "User logout object",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegistrationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegistrationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (invalid request body)",
+            "content": {}
+          },
+          "409": {
+            "description": "Provided email already exists",
+            "content": {}
+          }
+        }
+      }
+    },
+    "api/notices/search/{category}": {
+      "get": {
+        "tags": ["Notices"],
+        "summary": "Get Notices by category",
+        "parameters": [
+          {
+            "name": "category",
+            "in": "path",
+            "description": "Category of notices",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "security": [{ "Bearer": [] }],
+        "requestBody": {
+          "description": "Category object",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetAllNoticesRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetAllNoticesResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request ((invalid request parameters))",
+            "content": {}
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {}
+          }
+        }
+      }
+    },
+    "api/notices/search/{category}/{title}": {
+      "get": {
+        "tags": ["Notices"],
+        "summary": "Get Notices category and title",
+        "parameters": [
+          {
+            "name": "category",
+            "in": "path",
+            "description": "Category of notices",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "title",
+            "in": "path",
+            "description": "Title of notices",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "security": [{ "Bearer": [] }],
+        "requestBody": {
+          "description": "Category and title object",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetAllNitecesByCategoryAndTitleRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetAllNitecesByCategoryAndTitleResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request ((invalid request parameters))",
+            "content": {}
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {}
+          }
+        }
+      }
+    },
+    "api/notices/{id}": {
+      "get": {
+        "tags": ["Notices"],
+        "summary": "Get Notice by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Id notice",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "security": [{ "Bearer": [] }],
+
+        "requestBody": {
+          "description": "Get notice by ID",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetByIdRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetByIdResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (invalid request parameters)",
+            "content": {}
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {}
+          }
+        }
+      }
+    },
+    "api/notices/": {
+      "post": {
+        "tags": ["Notices"],
+        "summary": "Add Notice",
+        "parameters": [
+          {
+            "name": "category",
+            "in": "path",
+            "description": "Category notice",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "title",
+            "in": "path",
+            "description": "Title of notice",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "in": "path",
+            "description": "Pet name",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "date",
+            "in": "path",
+            "description": "Pet Birthday",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "type",
+            "in": "path",
+            "description": "Type of pet",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "sex",
+            "in": "path",
+            "description": "Sex of pet",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "location",
+            "in": "path",
+            "description": "Location of pet",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "file",
+            "in": "path",
+            "description": "Photo of pet",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "price",
+            "in": "path",
+            "description": "Price of pet",
+            "required": true,
+            "type": "number"
+          },
+          {
+            "name": "Comment",
+            "in": "path",
+            "description": "Comment",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "security": [{ "Bearer": [] }],
+        "requestBody": {
+          "description": "Category and title object",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddNoticeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddNoticeResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (invalid request body)",
+            "content": {}
+          }
+        }
+      }
+    },
+    "api/notices/{id}/favorite": {
+      "patch": {
+        "tags": ["Notices"],
+        "summary": "Add/Delete notice to/from favorites",
+        "parameters": [
+          {
+            "name": "favorite",
+            "in": "path",
+            "description": "favorite",
+            "required": true,
+            "type": "boolean"
+          }
+        ],
+        "security": [{ "Bearer": [] }],
+        "requestBody": {
+          "description": "Add favorite true or false",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddOrDeleteNoticeFromFavoriteRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddOrDeleteNoticeFromFavoriteResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (invalid input data)",
+            "content": {}
+          }
+        }
+      }
+    },
+    "api/notices/get/favorites": {
+      "get": {
+        "tags": ["Notices"],
+        "summary": "Get favorites Notices",
+        "parameters": [],
+        "security": [{ "Bearer": [] }],
+        "requestBody": {
+          "description": "Get favorotes notices",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegistrationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegistrationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (invalid request body)",
+            "content": {}
+          },
+          "409": {
+            "description": "Provided email already exists",
+            "content": {}
+          }
+        }
+      }
+    },
+    "api/notices": {
+      "get": {
+        "tags": ["Notices"],
+        "summary": "Get all own Notices",
+        "parameters": [],
+        "security": [{ "Bearer": [] }],
+        "requestBody": {
+          "description": "Get all own Notices",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegistrationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegistrationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (invalid request body)",
+            "content": {}
+          },
+          "409": {
+            "description": "Provided email already exists",
+            "content": {}
+          }
+        }
+      }
+    },
+    "api/notices/:id": {
+      "delete": {
+        "tags": ["Notices"],
+        "summary": "Delete own Notice",
+        "parameters": [],
+        "security": [{ "Bearer": [] }],
+        "requestBody": {
+          "description": "Delete own Notice",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegistrationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegistrationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (invalid request body)",
+            "content": {}
+          },
+          "409": {
+            "description": "Provided email already exists",
+            "content": {}
+          }
+        }
+      }
+    },
+    "api/pets": {
+      "post": {
+        "tags": ["Pets"],
+        "summary": "Add pet",
+        "parameters": [],
+        "security": [{ "Bearer": [] }],
+        "requestBody": {
+          "description": "Add pet",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegistrationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegistrationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (invalid request body)",
+            "content": {}
+          },
+          "409": {
+            "description": "Provided email already exists",
+            "content": {}
+          }
+        }
+      }
+    },
+    "api/pets/:id": {
+      "delete": {
+        "tags": ["Pets"],
+        "summary": "Delete Pet",
+        "parameters": [],
+        "security": [{ "Bearer": [] }],
+        "requestBody": {
+          "description": "Delete pet",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegistrationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegistrationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (invalid request body)",
+            "content": {}
+          },
+          "409": {
+            "description": "Provided email already exists",
+            "content": {}
+          }
+        }
+      }
+    },
+    "api/user-info": {
+      "get": {
+        "tags": ["User+Pets"],
+        "summary": "Get user and his pets",
+        "parameters": [],
+        "security": [{ "Bearer": [] }],
+        "requestBody": {
+          "description": "Get user and his pets",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegistrationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegistrationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (invalid request body)",
+            "content": {}
+          },
+          "409": {
+            "description": "Provided email already exists",
+            "content": {}
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "GetAllNoticesRequest": {
+        "type": "object",
+        "required": ["category"],
+        "properties": {
+          "category": {
+            "type": "string",
+            "description": "Category notice",
+            "example": "sell"
+          }
+        }
+      },
+      "GetAllNoticesResponse": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "category": {
+              "type": "string",
+              "description": "Category notice",
+              "format": "string"
+            }
+          }
+        },
+        "example": [
+          {
+            "category": "sell",
+            "name": "Patrick",
+            "type": "dog",
+            "price": 120
+          },
+          { "category": "sell", "name": "Luna", "type": "cat", "price": 234 }
+        ]
+      },
+      "GetAllNitecesByCategoryAndTitleRequest": {
+        "type": "object",
+        "required": ["category", "title"],
+        "properties": {
+          "category": {
+            "type": "string",
+            "description": "Category notice",
+            "example": "sell"
+          },
+          "title": {
+            "type": "string",
+            "description": "Title of notice",
+            "example": "sell dog"
+          }
+        }
+      },
+      "GetAllNitecesByCategoryAndTitleResponse": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {}
+        },
+        "example": [
+          {
+            "category": "sell",
+            "title": "i want sell my dog",
+            "name": "Patrick",
+            "type": "dog",
+            "price": 120
+          },
+          {
+            "category": "sell",
+            "title": "selling dog",
+            "name": "Luna",
+            "type": "cat",
+            "price": 234
+          }
+        ]
+      },
+      "GetByIdRequest": {
+        "type": "object",
+        "required": ["id"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Id of notice",
+            "example": "324dgbvk54dfgkj34"
+          }
+        }
+      },
+      "GetByIdResponse": {
+        "type": "object",
+        "items": {
+          "type": "object",
+          "properties": {}
+        },
+        "example": [
+          {
+            "id": "324dgbvk54dfgkj34",
+            "category": "sell",
+            "title": "i want sell my dog",
+            "name": "Patrick",
+            "type": "dog",
+            "price": 120
+          }
+        ]
+      },
+      "AddNoticeRequest": {
+        "type": "object",
+        "required": [
+          "title",
+          "category",
+          "title",
+          "name",
+          "type",
+          "price",
+          "location"
+        ],
+        "properties": {
+          "category": {
+            "type": "string",
+            "description": "Category of notice",
+            "example": "sell"
+          },
+          "title": {
+            "type": "string",
+            "description": "Title of notice",
+            "example": "i want sell my dog"
+          },
+          "name": {
+            "type": "String",
+            "description": "Pet name",
+            "example": "Patrick"
+          },
+          "type": {
+            "type": "String",
+            "description": "Type of pet",
+            "example": "dog"
+          },
+          "price": {
+            "type": "Number",
+            "description": "Price of pet",
+            "example": 120
+          },
+          "location": {
+            "type": "String",
+            "description": "Location of pet",
+            "example": "Kyiv"
+          },
+          "comment": {
+            "type": "String",
+            "description": "Comment",
+            "example": "text"
+          }
+        }
+      },
+      "AddNoticeResponse": {
+        "type": "object",
+        "items": {
+          "type": "object",
+          "properties": {}
+        },
+        "example": [
+          {
+            "id": "324dgbvk54dfgkj34",
+            "category": "sell",
+            "title": "i want sell my dog",
+            "name": "Patrick",
+            "type": "dog",
+            "price": 120,
+            "location": "Kyiv",
+            "comment": "text",
+            "favorite": false
+          }
+        ]
+      },
+      "AddOrDeleteNoticeFromFavoriteRequest": {
+        "type": "object",
+        "required": ["favorite"],
+        "properties": {
+          "favorite": {
+            "type": "boolean",
+            "description": "Add to favorite",
+            "example": true
+          }
+        }
+      },
+      "AddOrDeleteNoticeFromFavoriteResponse": {
+        "type": "object",
+        "items": {
+          "type": "object",
+          "properties": {}
+        },
+        "example": [
+          {
+            "id": "324dgbvk54dfgkj34",
+            "category": "sell",
+            "title": "i want sell my dog",
+            "name": "Patrick",
+            "type": "dog",
+            "price": 120,
+            "location": "Kyiv",
+            "comment": "text",
+            "favorite": true
+          }
+        ]
+      },
+      "RegistrationRequest": {
+        "type": "object",
+        "required": ["email", "password"],
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "User's email",
+            "format": "email"
+          },
+          "password": {
+            "type": "string",
+            "description": "User's password",
+            "example": "qwerty123"
+          }
+        }
+      },
+      "RegistrationResponse": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "email": {
+              "type": "string",
+              "description": "User's email",
+              "format": "email"
+            },
+            "userId": {
+              "type": "number",
+              "description": "User's id",
+              "example": "32143232436545474"
+            }
+          }
+        },
+        "example": [
+          { "email": "1@gmail.com", "userId": "1" },
+          { "email": "2@gmail.com", "userId": "2" }
+        ]
+      }
+    },
+    "securitySchemes": {
+      "Bearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}

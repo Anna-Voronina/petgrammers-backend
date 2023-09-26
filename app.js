@@ -6,12 +6,16 @@ const fs = require("fs/promises");
 const swaggerUi = require("swagger-ui-express");
 const swaggerDocument = require("./swagger.json");
 
+const swaggerUI = require("swagger-ui-express");
+const swaggerJson = require("./swager.json");
+
 require("dotenv").config();
 
 const authRouter = require("./routes/api/auth");
 const noticeRouter = require("./routes/api/notices");
 const petRouter = require("./routes/api/pets");
 const userInfoRouter = require("./routes/api/userInfo");
+const authRouter = require("./routes/api/auth");
 
 const app = express();
 
@@ -22,18 +26,18 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
 
+app.use("/api/auth", authRouter);
+app.use("/api/notices", noticeRouter);
+app.use("/api/pets", petRouter);
+app.use("/api/user-info", userInfoRouter);
+app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerJson));
+
 app.use((req, res, next) => {
   const { method, url } = req;
   const date = moment().format("DD-MM-YY_hh:mm:ss");
   fs.appendFile("./public/server.log", `\n${method} ${url} ${date}`);
   next();
 });
-
-app.use("/api/auth", authRouter);
-app.use("/api/notices", noticeRouter);
-app.use("/api/pets", petRouter);
-app.use("/api/user-info", userInfoRouter);
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use((req, res) => {
   res.status(404).json({ message: "Not found" });
