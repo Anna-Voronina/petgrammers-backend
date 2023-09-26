@@ -36,7 +36,6 @@
         "tags": ["Auth"],
         "summary": "User registration",
         "parameters": [],
-        "security": [{ "Bearer": [] }],
         "requestBody": {
           "description": "Registration's object",
           "required": true,
@@ -75,7 +74,6 @@
         "tags": ["Auth"],
         "summary": "User authentication",
         "parameters": [],
-        "security": [{ "Bearer": [] }],
         "requestBody": {
           "description": "Autentication's object",
           "required": true,
@@ -149,7 +147,7 @@
       }
     },
     "api/auth/editUserForm": {
-      "get": {
+      "patch": {
         "tags": ["Auth"],
         "summary": "Edit user information",
         "parameters": [
@@ -195,8 +193,8 @@
         }
       }
     },
-    "api/auth//updateAvatar": {
-      "get": {
+    "api/auth/updateAvatar": {
+      "patch": {
         "tags": ["Auth"],
         "summary": "Update user avatar",
         "parameters": [
@@ -246,6 +244,45 @@
         "security": [{ "Bearer": [] }],
         "requestBody": {
           "description": "User logout object",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegistrationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegistrationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (invalid request body)",
+            "content": {}
+          },
+          "409": {
+            "description": "Provided email already exists",
+            "content": {}
+          }
+        }
+      }
+    },
+    "api/auth/refresh-token": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "User refresh-token",
+        "parameters": [],
+        "security": [{ "Bearer": [] }],
+        "requestBody": {
+          "description": "Refreshing token",
           "required": true,
           "content": {
             "application/json": {
