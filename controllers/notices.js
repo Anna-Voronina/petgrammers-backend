@@ -9,21 +9,30 @@ const { User } = require("../models/user");
 
 // створити ендпоінт для пошуку оголошень з урахуванням переданої категорії з NoticesCategoriesNav та/або параметрів з NoticesSearch (пошук по заголовку)
 const searchNotices = async (req, res, next) => {
-  try {
-    const { category, title } = req.params;
-    const query = {};
-    if (category) {
-      query.category = category;
-    }
-    if (title) {
-      query.title = { $regex: title, $options: "i" };
-    }
-    const notices = await Notice.find(query);
-
-    res.status(200).json(notices);
-  } catch (error) {
-    next(error);
+  const { category, title } = req.params;
+  const { page = 1, limit = 12 } = req.query;
+  const query = {};
+  if (category) {
+    query.category = category;
   }
+  if (title) {
+    query.title = { $regex: title, $options: "i" };
+  }
+
+  const skip = (page - 1) * limit;
+  const notices = await Notice.find(query).skip(skip).limit(limit);
+  res.status(200).json(notices);
+};
+
+const getAllNoticesByTitle = async (req, res, next) => {
+  const { title } = req.params;
+  const query = {};
+  if (title) {
+    query.title = { $regex: title, $options: "i" };
+  }
+  const data = await Notice.find(query);
+  //Дописати, що видаємо пустий масив якщо респонс порожній
+  res.status(200).json(data);
 };
 
 //Отримати одне оголошення
@@ -33,7 +42,7 @@ const getNoticeById = async (req, res, next) => {
   if (!notice) {
     throw HttpError(404, "Notice is not found");
   }
-  res.json(notice);
+  res.status(200).json(notice);
 };
 
 //Додати оголошення до обраних
@@ -63,19 +72,22 @@ const changeNoticeFavorites = async (req, res, next) => {
   }
   await req.user.save();
 
-  res.json(notice);
-  res.json(notice);
+  res.status(200).json(notice);
 };
 
 //Отримання всіх оголошень які обрані
 const getFavorites = async (req, res, next) => {
   // const data = await Notice.find({ favorite: true });
   // res.json(data);
+  const { page = 1, limit = 12 } = req.query;
   const { id } = req.user;
+  const skip = (page - 1) * limit;
   const user = await User.findById(id);
   const favoriteNoriceIds = user.favorites;
-  const favorites = await Notice.find({ _id: { $in: favoriteNoriceIds } });
-  res.json(favorites);
+  const favorites = await Notice.find({ _id: { $in: favoriteNoriceIds } })
+    .skip(skip)
+    .limit(limit);
+  res.status(200).json(favorites);
 };
 
 //Додати власне оголошення (не закінчено, додати owner)
@@ -100,9 +112,11 @@ const addOwnNotice = async (req, res, next) => {
 
 //Отримання всіх власних оголошень
 const getAllOwnNotices = async (req, res, next) => {
+  const { page = 1, limit = 12 } = req.query;
+  const skip = (page - 1) * limit;
   const { _id: owner } = req.user;
-  const data = await Notice.find({ owner });
-  res.json(data);
+  const data = await Notice.find({ owner }).skip(skip).limit(limit);
+  res.status(200).json(data);
 };
 
 //Видалити власне оголошення
@@ -117,6 +131,17 @@ const getAllNotices = async (req, res, next) => {
   res.status(200).json(data);
 };
 
+// const getAllContacts = async (req, res, next) => {
+//   const { id: owner } = req.user;
+//   const { page = 1, limit = 20 } = req.query;
+//   const skip = (page - 1) * limit;
+//   const data = await Contact.find({ owner })
+//     .skip(skip)
+//     .limit(limit)
+//     .populate("owner", "email");
+//   res.json(data);
+// };
+
 module.exports = {
   addOwnNotice: ctrlWrapper(addOwnNotice),
   searchNotices: ctrlWrapper(searchNotices),
@@ -126,4 +151,5 @@ module.exports = {
   getAllOwnNotices: ctrlWrapper(getAllOwnNotices),
   deleteOwnNotice: ctrlWrapper(deleteOwnNotice),
   getAllNotices: ctrlWrapper(getAllNotices),
+  getAllNoticesByTitle: ctrlWrapper(getAllNoticesByTitle),
 };
