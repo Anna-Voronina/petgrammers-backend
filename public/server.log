@@ -277,3 +277,9 @@ PATCH /api/notices/650fea17edbba2788fcb5f23/favorites 25-09-23_04:31:40
 PATCH /api/notices/get/all 25-09-23_04:31:44
 PATCH /api/notices/650fea17edbba2788fcb5f23/favorites 25-09-23_04:32:00
 PATCH /api/notices/get/favorites 25-09-23_04:52:27
+
+GET /api/docs 26-09-23_12:04:09
+GET /favicon.ico 26-09-23_12:04:10
+GET /api/news 26-09-23_12:43:03
+GET /api/news 26-09-23_03:54:13
+GET /api/news 26-09-23_03:54:16

@@ -30,4 +30,6 @@ router.patch(
   ctrl.updateAvatar
 );
 
+router.post("/refresh-token", authenticate, ctrl.refreshAccessToken);
+
 module.exports = router;

@@ -49,9 +49,7 @@ const login = async (req, res) => {
 
   const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "23h" });
   await User.findByIdAndUpdate(user._id, { token });
-  res.json({
-    token,
-  });
+  res.json({ user: { name: user.name, email }, token });
 };
 
 const getCurrent = async (req, res) => {
@@ -110,6 +108,21 @@ const updateAvatar = async (req, res) => {
   });
 };
 
+const refreshAccessToken = async (req, res) => {
+  const { user } = req;
+  const payload = {
+    id: user._id,
+  };
+
+  const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "23h" });
+
+  await User.findByIdAndUpdate(user._id, { token });
+
+  res.json({
+    token,
+  });
+};
+
 module.exports = {
   register: ctrlWrapper(register),
   login: ctrlWrapper(login),
@@ -117,4 +130,5 @@ module.exports = {
   logout: ctrlWrapper(logout),
   editUserForm: ctrlWrapper(editUserForm),
   updateAvatar: ctrlWrapper(updateAvatar),
+  refreshAccessToken: ctrlWrapper(refreshAccessToken),
 };
