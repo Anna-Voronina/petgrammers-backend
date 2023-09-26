@@ -37,4 +37,7 @@ router.get("/", authenticate, controllers.getAllOwnNotices);
 //Видалити оголошення автора
 router.delete("/:id", authenticate, isValidId, controllers.deleteOwnNotice);
 
+//Дістати всі оголошення
+router.get("/get/all", authenticate, controllers.getAllNotices);
+
 module.exports = router;

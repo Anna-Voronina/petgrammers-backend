@@ -148,6 +148,96 @@
         }
       }
     },
+    "api/auth/editUserForm": {
+      "get": {
+        "tags": ["Auth"],
+        "summary": "Edit user information",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "path",
+            "description": "Updated user information",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "security": [{ "Bearer": [] }],
+        "requestBody": {
+          "description": "User current object",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegistrationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User information updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegistrationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (invalid request body)",
+            "content": {}
+          },
+          "409": {
+            "description": "Provided email already exists",
+            "content": {}
+          }
+        }
+      }
+    },
+    "api/auth//updateAvatar": {
+      "get": {
+        "tags": ["Auth"],
+        "summary": "Update user avatar",
+        "parameters": [
+          {
+            "name": "avatarURL",
+            "in": "formData",
+            "description": "User avatar image file",
+            "required": true,
+            "type": "file"
+          }
+        ],
+        "security": [{ "Bearer": [] }],
+        "requestBody": {
+          "description": "User current object",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegistrationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Avatar updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegistrationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (invalid request body)",
+            "content": {}
+          }
+        }
+      }
+    },
     "api/auth/logout": {
       "post": {
         "tags": ["Auth"],

@@ -50,6 +50,10 @@ const userSchema = new Schema(
       type: String,
       default: "city Name",
     },
+    favorites: {
+      type: Array,
+      default: [],
+    },
 
     token: { type: String, default: "" },
   },
