@@ -9,10 +9,11 @@ const swaggerJson = require("./swager.json");
 
 require("dotenv").config();
 
+const authRouter = require("./routes/api/auth");
 const noticeRouter = require("./routes/api/notices");
 const petRouter = require("./routes/api/pets");
 const userInfoRouter = require("./routes/api/userInfo");
-const authRouter = require("./routes/api/auth");
+const newsRouter = require("./routes/api/news");
 
 const app = express();
 
@@ -27,6 +28,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/notices", noticeRouter);
 app.use("/api/pets", petRouter);
 app.use("/api/user-info", userInfoRouter);
+app.use("/api/news", newsRouter);
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerJson));
 
 app.use((req, res, next) => {

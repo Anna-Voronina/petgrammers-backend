@@ -20,10 +20,15 @@ const register = async (req, res) => {
   const hashPassword = await bcrypt.hash(password, 10);
   const newUser = await User.create({ ...req.body, password: hashPassword });
 
-  res.status(201).json({
-    name: newUser.name,
-    email: newUser.email,
-  });
+  const payload = {
+    id: newUser._id,
+  };
+
+  const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "23h" });
+
+  res
+    .status(201)
+    .json({ user: { name: newUser.name, email: newUser.email }, token });
 };
 
 const login = async (req, res) => {
@@ -44,9 +49,7 @@ const login = async (req, res) => {
 
   const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "23h" });
   await User.findByIdAndUpdate(user._id, { token });
-  res.json({
-    token,
-  });
+  res.json({ user: { name: user.name, email }, token });
 };
 
 const getCurrent = async (req, res) => {
@@ -105,6 +108,21 @@ const updateAvatar = async (req, res) => {
   });
 };
 
+const refreshAccessToken = async (req, res) => {
+  const { user } = req;
+  const payload = {
+    id: user._id,
+  };
+
+  const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "23h" });
+
+  await User.findByIdAndUpdate(user._id, { token });
+
+  res.json({
+    token,
+  });
+};
+
 module.exports = {
   register: ctrlWrapper(register),
   login: ctrlWrapper(login),
@@ -112,4 +130,5 @@ module.exports = {
   logout: ctrlWrapper(logout),
   editUserForm: ctrlWrapper(editUserForm),
   updateAvatar: ctrlWrapper(updateAvatar),
+  refreshAccessToken: ctrlWrapper(refreshAccessToken),
 };
