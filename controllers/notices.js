@@ -123,7 +123,11 @@ const getAllOwnNotices = async (req, res, next) => {
 const deleteOwnNotice = async (req, res, next) => {
   const { id } = req.params;
   const notice = await Notice.findByIdAndDelete(id);
-  res.status(204).json(notice);
+  if (notice) {
+    res.json(notice).status(204);
+  } else {
+    throw HttpError(404, "Id not found");
+  }
 };
 
 const getAllNotices = async (req, res, next) => {
