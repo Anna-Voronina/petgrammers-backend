@@ -1,4 +1,9 @@
-const { ctrlWrapper, HttpError, cloudinary } = require("../helpers");
+const {
+  ctrlWrapper,
+  HttpError,
+  cloudinary,
+  calculateAge,
+} = require("../helpers");
 const Notice = require("../models/Notice");
 const addNoticeSchema = require("../schemas/notices");
 
@@ -98,6 +103,8 @@ const addOwnNotice = async (req, res, next) => {
   }
   const { id: owner } = req.user;
   const { path: filePath } = req.file;
+  const { date } = req.body;
+  const age = calculateAge(date);
 
   const imageJimp = await jimp.read(filePath);
   imageJimp.cover(336, 288).write(filePath);
@@ -106,7 +113,7 @@ const addOwnNotice = async (req, res, next) => {
     folder: "notices",
   });
   await fs.unlink(filePath);
-  const data = await Notice.create({ ...req.body, file, owner });
+  const data = await Notice.create({ ...req.body, age, file, owner });
   res.status(201).json(data);
 };
 
@@ -135,16 +142,28 @@ const getAllNotices = async (req, res, next) => {
   res.status(200).json(data);
 };
 
-// const getAllContacts = async (req, res, next) => {
-//   const { id: owner } = req.user;
-//   const { page = 1, limit = 20 } = req.query;
-//   const skip = (page - 1) * limit;
-//   const data = await Contact.find({ owner })
-//     .skip(skip)
-//     .limit(limit)
-//     .populate("owner", "email");
-//   res.json(data);
-// };
+//Отримання по фільтру
+const getNoticesByAgeOrGender = async (req, res, next) => {
+  const { age, sex } = req.query;
+
+  const query = {};
+
+  if (age === "1") {
+    query.age = { $lt: 1 };
+  } else if (age === "2") {
+    query.age = { $lt: 2 };
+  } else if (age === ">2") {
+    query.age = { $gte: 2 };
+  }
+
+  if (sex) {
+    query.sex = sex;
+  }
+
+  const data = await Notice.find(query);
+
+  res.status(200).json(data);
+};
 
 module.exports = {
   addOwnNotice: ctrlWrapper(addOwnNotice),
@@ -156,4 +175,5 @@ module.exports = {
   deleteOwnNotice: ctrlWrapper(deleteOwnNotice),
   getAllNotices: ctrlWrapper(getAllNotices),
   getAllNoticesByTitle: ctrlWrapper(getAllNoticesByTitle),
+  getNoticesByAgeOrGender: ctrlWrapper(getNoticesByAgeOrGender),
 };
