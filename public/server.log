@@ -287,3 +287,5 @@ GET /favicon.ico 26-09-23_12:04:10
 GET /api/news 26-09-23_12:43:03
 GET /api/news 26-09-23_03:54:13
 GET /api/news 26-09-23_03:54:16
+
+GET /api/notices/filter/age=1 27-09-23_11:23:11

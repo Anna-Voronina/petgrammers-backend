@@ -34,6 +34,9 @@ const noticeSchema = new Schema(
         message: "Format date must be DD-MM-YYYY",
       },
     },
+    age: {
+      type: Number,
+    },
     type: {
       type: String,
       minlength: 2,
