@@ -1,5 +1,5 @@
 const Friend = require("../models/Friend");
-const { HttpError, ctrlWrapper } = require("../helpers");
+const { ctrlWrapper } = require("../helpers");
 
 const getAllFriends = async (req, res, next) => {
   const data = await Friend.find();

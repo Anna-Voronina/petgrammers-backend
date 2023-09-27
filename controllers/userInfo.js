@@ -8,6 +8,7 @@ const getUserInfo = async (req, res, next) => {
   const userPets = await Pet.find({ owner: id });
 
   const userInfo = {
+    id: user._id,
     name: user.name,
     email: user.email,
     birthday: user.birthday,
