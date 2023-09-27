@@ -53,28 +53,27 @@ const getNoticeById = async (req, res, next) => {
 //Додати оголошення до обраних
 const changeNoticeFavorites = async (req, res, next) => {
   const { id } = req.params;
-  const { favorite } = req.body;
-  if (favorite === undefined) {
-    throw HttpError(400, "Missing field favorite");
+
+  if (!id) {
+    throw HttpError(404, "Id not found");
   }
-  const notice = await Notice.findByIdAndUpdate(
-    id,
-    { favorite },
-    { new: true }
-  );
+
+  const notice = await Notice.findById(id);
 
   if (!notice) {
-    throw HttpError(404, "Notice is not found");
+    throw HttpError(404, "Notice not found");
   }
 
-  if (favorite) {
-    req.user.favorites.push(id);
+  const index = req.user.favorites.findIndex(
+    (favorite) => favorite._id.toString() === id
+  );
+
+  if (index === -1) {
+    req.user.favorites.push(notice);
   } else {
-    const index = req.user.favorites.indexOf(id);
-    if (index !== -1) {
-      req.user.favorites.splice(index, 1);
-    }
+    req.user.favorites.splice(index, 1);
   }
+
   await req.user.save();
 
   res.status(200).json(notice);
@@ -82,17 +81,12 @@ const changeNoticeFavorites = async (req, res, next) => {
 
 //Отримання всіх оголошень які обрані
 const getFavorites = async (req, res, next) => {
-  // const data = await Notice.find({ favorite: true });
-  // res.json(data);
-  const { page = 1, limit = 12 } = req.query;
   const { id } = req.user;
-  const skip = (page - 1) * limit;
+  if (!id) {
+    throw HttpError(404, "User by this id does not exist");
+  }
   const user = await User.findById(id);
-  const favoriteNoriceIds = user.favorites;
-  const favorites = await Notice.find({ _id: { $in: favoriteNoriceIds } })
-    .skip(skip)
-    .limit(limit);
-  res.status(200).json(favorites);
+  res.status(200).json(user.favorites);
 };
 
 //Додати власне оголошення (не закінчено, додати owner)
@@ -137,6 +131,7 @@ const deleteOwnNotice = async (req, res, next) => {
   }
 };
 
+//Дістати всі оголошення
 const getAllNotices = async (req, res, next) => {
   const data = await Notice.find();
   res.status(200).json(data);
@@ -144,20 +139,24 @@ const getAllNotices = async (req, res, next) => {
 
 //Отримання по фільтру
 const getNoticesByAgeOrGender = async (req, res, next) => {
-  const { age, sex } = req.query;
+  const { age, sex, category } = req.query;
 
   const query = {};
 
   if (age === "1") {
-    query.age = { $lt: 1 };
+    query.age = { $lte: 1 };
   } else if (age === "2") {
-    query.age = { $lt: 2 };
+    query.age = { $lte: 2 };
   } else if (age === ">2") {
-    query.age = { $gte: 2 };
+    query.age = { $gt: 2 };
   }
 
   if (sex) {
     query.sex = sex;
+  }
+
+  if (category) {
+    query.category = category;
   }
 
   const data = await Notice.find(query);
