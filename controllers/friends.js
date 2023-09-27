@@ -2,7 +2,9 @@ const Friend = require("../models/Friend");
 const { HttpError, ctrlWrapper } = require("../helpers");
 
 const getAllFriends = async (req, res, next) => {
-  const data = await Friend.find();
+  const { page = 1, limit = 9 } = req.query;
+  const skip = (page - 1) * limit;
+  const data = await Friend.find().skip(skip).limit(limit);
   res.status(200).json(data);
 };
 

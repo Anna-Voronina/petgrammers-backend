@@ -289,3 +289,8 @@ GET /api/news 26-09-23_03:54:13
 GET /api/news 26-09-23_03:54:16
 
 GET /api/notices/filter/age=1 27-09-23_11:23:11
+PATCH /api/notices/get/favorites 27-09-23_04:24:53
+PATCH /api/notices/get/favorites 27-09-23_04:28:04
+PATCH /api/auth/current 27-09-23_04:29:20
+GET /api/notices/filter/age=1 27-09-23_04:30:15
+PATCH /api/notices/get/favorites 27-09-23_05:23:35
