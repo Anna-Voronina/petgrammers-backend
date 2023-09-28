@@ -14,7 +14,7 @@ const addOwnPet = async (req, res, next) => {
   const { path: filePath } = req.file;
 
   const imageJimp = await jimp.read(filePath);
-  imageJimp.cover(161, 161).write(filePath);
+  imageJimp.cover(300, 300).write(filePath);
 
   const { url: file } = await cloudinary.uploader.upload(filePath, {
     folder: "pets",
