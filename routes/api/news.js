@@ -4,8 +4,7 @@ const ctrl = require("../../controllers/news");
 
 const router = express.Router();
 
-console.log(ctrl.getNews);
-
 router.get("/", ctrl.getNews);
+router.get("/:title", ctrl.getNewsByTitle);
 
 module.exports = router;
