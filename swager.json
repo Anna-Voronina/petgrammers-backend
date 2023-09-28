@@ -1006,9 +1006,39 @@
           "400": {
             "description": "Bad request (invalid request body)",
             "content": {}
+          }
+        }
+      }
+    },
+    "api/news/{title}": {
+      "get": {
+        "tags": ["News"],
+        "summary": "Get news by title",
+        "parameters": [],
+        "requestBody": {
+          "description": "Get news by title",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/"
+                }
+              }
+            }
           },
-          "409": {
-            "description": "Provided email already exists",
+          "400": {
+            "description": "Bad request (invalid request body)",
             "content": {}
           }
         }

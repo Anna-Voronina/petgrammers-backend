@@ -9,4 +9,18 @@ const getNews = async (req, res) => {
   res.json(newsData);
 };
 
-module.exports = { getNews: ctrlWrapper(getNews) };
+const getNewsByTitle = async (req, res) => {
+  const { title } = req.params;
+  const query = {};
+  if (title) {
+    query.title = { $regex: title, $options: "i" };
+  }
+  const data = await News.find(query);
+  console.log(data);
+  res.status(200).json(data);
+};
+
+module.exports = {
+  getNews: ctrlWrapper(getNews),
+  getNewsByTitle: ctrlWrapper(getNewsByTitle),
+};
