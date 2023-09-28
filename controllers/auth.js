@@ -98,14 +98,10 @@ const updateAvatar = async (req, res) => {
   });
 
   await fs.unlink(filepath);
-  const result = await User.findByIdAndUpdate(
-    owner,
-    { avatarURL },
-    { new: true }
-  );
+  const result = await User.findByIdAndUpdate(owner, { avatarURL });
 
   res.json({
-    result,
+    avatarURL,
   });
 };
 

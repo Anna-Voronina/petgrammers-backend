@@ -513,7 +513,7 @@
         }
       }
     },
-    "api/notices/filter/by?age={age}&sex={sex}": {
+    "api/notices/filter/by?age={age}&sex={sex}&category={category}": {
       "get": {
         "tags": ["Notices"],
         "summary": "Filter notices by age or sex",
@@ -528,6 +528,12 @@
             "name": "sex",
             "in": "path",
             "description": "Pet sex",
+            "type": "string"
+          },
+          {
+            "name": "category",
+            "in": "path",
+            "description": "Pet category",
             "type": "string"
           }
         ],
