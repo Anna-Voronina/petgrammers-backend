@@ -11,7 +11,7 @@
   },
   "consumes": ["application/json"],
   "produces": ["application/json"],
-  "servers": [{ "url": "http://localhost:3000" }],
+  "servers": [{ "url": "http://localhost:3000//" }],
   "tags": [
     {
       "name": "Auth",
@@ -335,17 +335,6 @@
             "type": "string"
           }
         ],
-        "requestBody": {
-          "description": "Category object",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/GetAllNoticesRequest"
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
             "description": "Successful operation",
@@ -1085,17 +1074,6 @@
   },
   "components": {
     "schemas": {
-      "GetAllNoticesRequest": {
-        "type": "object",
-        "required": ["category"],
-        "properties": {
-          "category": {
-            "type": "string",
-            "description": "Category notice",
-            "example": "sell"
-          }
-        }
-      },
       "GetAllNoticesResponse": {
         "type": "array",
         "items": {
@@ -1103,8 +1081,7 @@
           "properties": {
             "category": {
               "type": "string",
-              "description": "Category notice",
-              "format": "string"
+              "description": "Category notice"
             }
           }
         },
