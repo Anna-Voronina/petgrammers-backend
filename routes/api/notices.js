@@ -12,8 +12,14 @@ router.get("/search/:category", controllers.searchNotices);
 // Для пошуку оголошень по категорії та пошуку
 router.get("/search/:category/:title", controllers.searchNotices);
 
+// Для пошуку оголошень  по пошуку
+router.get("/query/:title", controllers.getAllNoticesByTitle);
+
 //Для оримання одного оголошення
 router.get("/:id", isValidId, controllers.getNoticeById);
+
+//Фільтрація оголошень
+router.get("/filter/by", controllers.getNoticesByAgeOrGender);
 
 //-------AUTHENTICATE ------- //
 

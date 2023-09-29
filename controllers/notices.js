@@ -1,4 +1,9 @@
-const { ctrlWrapper, HttpError, cloudinary } = require("../helpers");
+const {
+  ctrlWrapper,
+  HttpError,
+  cloudinary,
+  calculateAge,
+} = require("../helpers");
 const Notice = require("../models/Notice");
 const addNoticeSchema = require("../schemas/notices");
 
@@ -9,21 +14,32 @@ const { User } = require("../models/user");
 
 // створити ендпоінт для пошуку оголошень з урахуванням переданої категорії з NoticesCategoriesNav та/або параметрів з NoticesSearch (пошук по заголовку)
 const searchNotices = async (req, res, next) => {
-  try {
-    const { category, title } = req.params;
-    const query = {};
-    if (category) {
-      query.category = category;
-    }
-    if (title) {
-      query.title = { $regex: title, $options: "i" };
-    }
-    const notices = await Notice.find(query);
-
-    res.status(200).json(notices);
-  } catch (error) {
-    next(error);
+  const { category, title } = req.params;
+  const { page = 1, limit = 12 } = req.query;
+  const query = {};
+  if (category) {
+    query.category = category;
   }
+  if (title) {
+    query.title = { $regex: title, $options: "i" };
+  }
+
+  const skip = (page - 1) * limit;
+  const notices = await Notice.find(query).skip(skip).limit(limit);
+  res.status(200).json(notices);
+};
+
+const getAllNoticesByTitle = async (req, res, next) => {
+  const { title } = req.params;
+  const { page = 1, limit = 12 } = req.query;
+  const skip = (page - 1) * limit;
+  const query = {};
+  if (title) {
+    query.title = { $regex: title, $options: "i" };
+  }
+  const data = await Notice.find(query).skip(skip).limit(limit);
+  //Дописати, що видаємо пустий масив якщо респонс порожній
+  res.status(200).json(data);
 };
 
 //Отримати одне оголошення
@@ -33,49 +49,48 @@ const getNoticeById = async (req, res, next) => {
   if (!notice) {
     throw HttpError(404, "Notice is not found");
   }
-  res.json(notice);
+  res.status(200).json(notice);
 };
 
 //Додати оголошення до обраних
 const changeNoticeFavorites = async (req, res, next) => {
   const { id } = req.params;
-  const { favorite } = req.body;
-  if (favorite === undefined) {
-    throw HttpError(400, "Missing field favorite");
+
+  if (!id) {
+    throw HttpError(404, "Id not found");
   }
-  const notice = await Notice.findByIdAndUpdate(
-    id,
-    { favorite },
-    { new: true }
-  );
+
+  const notice = await Notice.findById(id);
 
   if (!notice) {
-    throw HttpError(404, "Notice is not found");
+    throw HttpError(404, "Notice not found");
   }
 
-  if (favorite) {
-    req.user.favorites.push(id);
+  const index = req.user.favorites.findIndex(
+    (favorite) => favorite._id.toString() === id
+  );
+
+  if (index === -1) {
+    req.user.favorites.push(notice);
   } else {
-    const index = req.user.favorites.indexOf(id);
-    if (index !== -1) {
-      req.user.favorites.splice(index, 1);
-    }
+    req.user.favorites.splice(index, 1);
   }
+
   await req.user.save();
 
-  res.json(notice);
-  res.json(notice);
+  res.status(200).json(notice);
 };
 
 //Отримання всіх оголошень які обрані
 const getFavorites = async (req, res, next) => {
-  // const data = await Notice.find({ favorite: true });
-  // res.json(data);
   const { id } = req.user;
-  const user = await User.findById(id);
-  const favoriteNoriceIds = user.favorites;
-  const favorites = await Notice.find({ _id: { $in: favoriteNoriceIds } });
-  res.json(favorites);
+  if (!id) {
+    throw HttpError(404, "User by this id does not exist");
+  }
+  const { page, limit } = req.query;
+  const skip = (page - 1) * limit;
+  const user = await User.findById(id).skip(skip).limit(limit);
+  res.status(200).json(user.favorites);
 };
 
 //Додати власне оголошення (не закінчено, додати owner)
@@ -86,6 +101,8 @@ const addOwnNotice = async (req, res, next) => {
   }
   const { id: owner } = req.user;
   const { path: filePath } = req.file;
+  const { date } = req.body;
+  const age = calculateAge(date);
 
   const imageJimp = await jimp.read(filePath);
   imageJimp.cover(336, 288).write(filePath);
@@ -94,26 +111,63 @@ const addOwnNotice = async (req, res, next) => {
     folder: "notices",
   });
   await fs.unlink(filePath);
-  const data = await Notice.create({ ...req.body, file, owner });
+  const data = await Notice.create({ ...req.body, age, file, owner });
   res.status(201).json(data);
 };
 
 //Отримання всіх власних оголошень
 const getAllOwnNotices = async (req, res, next) => {
+  const { page = 1, limit = 12 } = req.query;
   const { _id: owner } = req.user;
-  const data = await Notice.find({ owner });
-  res.json(data);
+  const skip = (page - 1) * limit;
+  const data = await Notice.find({ owner }).skip(skip).limit(limit);
+  res.status(200).json(data);
 };
 
 //Видалити власне оголошення
 const deleteOwnNotice = async (req, res, next) => {
   const { id } = req.params;
   const notice = await Notice.findByIdAndDelete(id);
-  res.status(204).json(notice);
+  if (notice) {
+    res.json(notice).status(204);
+  } else {
+    throw HttpError(404, "Id not found");
+  }
 };
 
+//Дістати всі оголошення
 const getAllNotices = async (req, res, next) => {
-  const data = await Notice.find();
+  const { page = 1, limit = 12 } = req.query;
+  const skip = (page - 1) * limit;
+  const data = await Notice.find().skip(skip).limit(limit);
+  res.status(200).json(data);
+};
+
+//Отримання по фільтру
+const getNoticesByAgeOrGender = async (req, res, next) => {
+  const { age, sex, category, page = 1, limit = 12 } = req.query;
+  const skip = (page - 1) * limit;
+
+  const query = {};
+
+  if (age === "1") {
+    query.age = { $lte: 1 };
+  } else if (age === "2") {
+    query.age = { $lte: 2 };
+  } else if (age === ">2") {
+    query.age = { $gt: 2 };
+  }
+
+  if (sex) {
+    query.sex = sex;
+  }
+
+  if (category) {
+    query.category = category;
+  }
+
+  const data = await Notice.find(query).skip(skip).limit(limit);
+
   res.status(200).json(data);
 };
 
@@ -126,4 +180,6 @@ module.exports = {
   getAllOwnNotices: ctrlWrapper(getAllOwnNotices),
   deleteOwnNotice: ctrlWrapper(deleteOwnNotice),
   getAllNotices: ctrlWrapper(getAllNotices),
+  getAllNoticesByTitle: ctrlWrapper(getAllNoticesByTitle),
+  getNoticesByAgeOrGender: ctrlWrapper(getNoticesByAgeOrGender),
 };

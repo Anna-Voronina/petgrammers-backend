@@ -277,12 +277,28 @@ PATCH /api/notices/650fea17edbba2788fcb5f23/favorites 25-09-23_04:31:40
 PATCH /api/notices/get/all 25-09-23_04:31:44
 PATCH /api/notices/650fea17edbba2788fcb5f23/favorites 25-09-23_04:32:00
 PATCH /api/notices/get/favorites 25-09-23_04:52:27
+GET /api/notice/search/sd 26-09-23_04:30:54
+GET /api/notice/search/sell 26-09-23_04:31:03
+GET /api/notice 26-09-23_05:15:06
+GET /api/contacts 26-09-23_06:03:51
 
 GET /api/docs 26-09-23_12:04:09
 GET /favicon.ico 26-09-23_12:04:10
 GET /api/news 26-09-23_12:43:03
 GET /api/news 26-09-23_03:54:13
 GET /api/news 26-09-23_03:54:16
+
+GET /api/notices/filter/age=1 27-09-23_11:23:11
+PATCH /api/notices/get/favorites 27-09-23_04:24:53
+PATCH /api/notices/get/favorites 27-09-23_04:28:04
+PATCH /api/auth/current 27-09-23_04:29:20
+GET /api/notices/filter/age=1 27-09-23_04:30:15
+PATCH /api/notices/get/favorites 27-09-23_05:23:35
+GET /api/auth/register 29-09-23_09:23:24
+POST /api/notices/get/all 29-09-23_09:23:46
+GET /api/notices/serch/lost-found 29-09-23_09:26:02
+PATCH /api/notices/get/all 29-09-23_09:31:41
+GET /api/notices/filter/by/age=1 29-09-23_09:46:19
 POST /api/notice 29-09-23_11:44:19
 POST /api/notice 29-09-23_11:48:19
 POST /api/notice 29-09-23_11:49:35

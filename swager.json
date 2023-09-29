@@ -28,6 +28,14 @@
     {
       "name": "User+Pets",
       "description": "User and Pets endpoints"
+    },
+    {
+      "name": "Friends",
+      "description": "Friends endpoints"
+    },
+    {
+      "name": "News",
+      "description": "News endpoints"
     }
   ],
   "paths": {
@@ -327,7 +335,6 @@
             "type": "string"
           }
         ],
-        "security": [{ "Bearer": [] }],
         "requestBody": {
           "description": "Category object",
           "required": true,
@@ -381,7 +388,6 @@
             "type": "string"
           }
         ],
-        "security": [{ "Bearer": [] }],
         "requestBody": {
           "description": "Category and title object",
           "required": true,
@@ -428,8 +434,6 @@
             "type": "string"
           }
         ],
-        "security": [{ "Bearer": [] }],
-
         "requestBody": {
           "description": "Get notice by ID",
           "required": true,
@@ -448,6 +452,109 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/GetByIdResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (invalid request parameters)",
+            "content": {}
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {}
+          }
+        }
+      }
+    },
+    "api/notices/query/{title}": {
+      "get": {
+        "tags": ["Notices"],
+        "summary": "Get Notice by title",
+        "parameters": [
+          {
+            "name": "title",
+            "in": "path",
+            "description": "title notice",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "requestBody": {
+          "description": "Get notice by ID",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SearchByTitleRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchByTitleResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (invalid request parameters)",
+            "content": {}
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {}
+          }
+        }
+      }
+    },
+    "api/notices/filter/by?age={age}&sex={sex}&category={category}": {
+      "get": {
+        "tags": ["Notices"],
+        "summary": "Filter notices by age or sex",
+        "parameters": [
+          {
+            "name": "age",
+            "in": "path",
+            "description": "Pet age",
+            "type": "string"
+          },
+          {
+            "name": "sex",
+            "in": "path",
+            "description": "Pet sex",
+            "type": "string"
+          },
+          {
+            "name": "category",
+            "in": "path",
+            "description": "Pet category",
+            "type": "string"
+          }
+        ],
+        "requestBody": {
+          "description": "Get notice by ID",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FilterPetsByAgeOrSexRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FilterPetsByAgeOrSexResponse"
                 }
               }
             }
@@ -624,7 +731,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/RegistrationRequest"
+                "$ref": "#/components/schemas/"
               }
             }
           }
@@ -635,17 +742,13 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/RegistrationResponse"
+                  "$ref": "#/components/schemas/"
                 }
               }
             }
           },
           "400": {
             "description": "Bad request (invalid request body)",
-            "content": {}
-          },
-          "409": {
-            "description": "Provided email already exists",
             "content": {}
           }
         }
@@ -657,44 +760,37 @@
         "summary": "Get all own Notices",
         "parameters": [],
         "security": [{ "Bearer": [] }],
-        "requestBody": {
-          "description": "Get all own Notices",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/RegistrationRequest"
-              }
-            }
-          }
-        },
         "responses": {
           "201": {
             "description": "Successful operation",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/RegistrationResponse"
+                  "$ref": "#/components/schemas/getAllOwnNoticesResponse"
                 }
               }
             }
           },
           "400": {
-            "description": "Bad request (invalid request body)",
-            "content": {}
-          },
-          "409": {
-            "description": "Provided email already exists",
+            "description": "Bad request ",
             "content": {}
           }
         }
       }
     },
-    "api/notices/:id": {
+    "api/notices/{:id}": {
       "delete": {
         "tags": ["Notices"],
         "summary": "Delete own Notice",
-        "parameters": [],
+        "parameters": [
+          {
+            "id": "23jjknjk534jkn4n323kj4",
+            "in": "path",
+            "description": "Notice ID",
+            "required": true,
+            "type": "string"
+          }
+        ],
         "security": [{ "Bearer": [] }],
         "requestBody": {
           "description": "Delete own Notice",
@@ -702,18 +798,18 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/RegistrationRequest"
+                "$ref": "#/components/schemas/DeleteOwnNoticeRequest"
               }
             }
           }
         },
         "responses": {
-          "201": {
+          "200": {
             "description": "Successful operation",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/RegistrationResponse"
+                  "$ref": "#/components/schemas/DeleteOwnNoticeResponse"
                 }
               }
             }
@@ -722,8 +818,8 @@
             "description": "Bad request (invalid request body)",
             "content": {}
           },
-          "409": {
-            "description": "Provided email already exists",
+          "404": {
+            "description": "Id not found",
             "content": {}
           }
         }
@@ -733,7 +829,43 @@
       "post": {
         "tags": ["Pets"],
         "summary": "Add pet",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "description": "Pet name",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "date",
+            "in": "path",
+            "description": "Pet Birthday",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "type",
+            "in": "path",
+            "description": "Type of pet",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "file",
+            "in": "path",
+            "description": "Photo of pet",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "Comment",
+            "in": "path",
+            "description": "Comment",
+            "required": false,
+            "type": "string"
+          }
+        ],
         "security": [{ "Bearer": [] }],
         "requestBody": {
           "description": "Add pet",
@@ -741,7 +873,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/RegistrationRequest"
+                "$ref": "#/components/schemas/AddMyPetRequest"
               }
             }
           }
@@ -752,7 +884,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/RegistrationResponse"
+                  "$ref": "#/components/schemas/AddMyPetResponse"
                 }
               }
             }
@@ -772,26 +904,28 @@
       "delete": {
         "tags": ["Pets"],
         "summary": "Delete Pet",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Pet id",
+            "required": true,
+            "type": "string"
+          }
+        ],
         "security": [{ "Bearer": [] }],
         "requestBody": {
           "description": "Delete pet",
           "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/RegistrationRequest"
-              }
-            }
-          }
+          "content": {}
         },
         "responses": {
-          "201": {
-            "description": "Successful operation",
+          "204": {
+            "description": "No content. Delete pet successfully",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/RegistrationResponse"
+                  "$ref": "#/components/schemas/DeleteMyPetResponse"
                 }
               }
             }
@@ -800,8 +934,8 @@
             "description": "Bad request (invalid request body)",
             "content": {}
           },
-          "409": {
-            "description": "Provided email already exists",
+          "404": {
+            "description": "Pet is not found",
             "content": {}
           }
         }
@@ -819,7 +953,41 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/RegistrationRequest"
+                "$ref": "#/components/schemas/userInfoRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/userInfoResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (invalid request body)",
+            "content": {}
+          }
+        }
+      }
+    },
+    "api/news": {
+      "get": {
+        "tags": ["News"],
+        "summary": "Get news",
+        "parameters": [],
+        "requestBody": {
+          "description": "Get news",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/"
               }
             }
           }
@@ -830,7 +998,75 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/RegistrationResponse"
+                  "$ref": "#/components/schemas/"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (invalid request body)",
+            "content": {}
+          }
+        }
+      }
+    },
+    "api/news/{title}": {
+      "get": {
+        "tags": ["News"],
+        "summary": "Get news by title",
+        "parameters": [],
+        "requestBody": {
+          "description": "Get news by title",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (invalid request body)",
+            "content": {}
+          }
+        }
+      }
+    },
+    "api/friends": {
+      "get": {
+        "tags": ["Friends"],
+        "summary": "Get friends",
+        "parameters": [],
+        "requestBody": {
+          "description": "Get friends",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/"
                 }
               }
             }
@@ -949,6 +1185,75 @@
           }
         ]
       },
+      "SearchByTitleRequest": {
+        "type": "object",
+        "required": ["title"],
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Title of notice",
+            "example": "cute dog"
+          }
+        }
+      },
+      "SearchByTitleResponse": {
+        "type": "object",
+        "items": {
+          "type": "object",
+          "properties": {}
+        },
+        "example": [
+          {
+            "id": "324dgbvk54dfgkj34",
+            "category": "sell",
+            "title": "cute dog",
+            "name": "Patrick",
+            "type": "dog",
+            "price": 120,
+            "location": "Kyiv",
+            "comment": "text",
+            "favorite": false
+          }
+        ]
+      },
+      "FilterPetsByAgeOrSexRequest": {
+        "type": "object",
+        "required": ["age", "sex"],
+        "properties": {
+          "age": {
+            "type": "string",
+            "description": "Pet age",
+            "example": "1"
+          },
+          "sex": {
+            "type": "string",
+            "description": "Pet sex",
+            "example": "male"
+          }
+        }
+      },
+      "FilterPetsByAgeOrSexResponse": {
+        "type": "object",
+        "items": {
+          "type": "object",
+          "properties": {}
+        },
+        "example": [
+          {
+            "id": "324dgbvk54dfgkj34",
+            "category": "sell",
+            "title": "cute dog",
+            "name": "Patrick",
+            "type": "dog",
+            "age": 0,
+            "sex": "male",
+            "price": 120,
+            "location": "Kyiv",
+            "comment": "text",
+            "favorite": false
+          }
+        ]
+      },
       "AddNoticeRequest": {
         "type": "object",
         "required": [
@@ -1046,6 +1351,141 @@
             "location": "Kyiv",
             "comment": "text",
             "favorite": true
+          }
+        ]
+      },
+      "getAllOwnNoticesResponse": {
+        "type": "object",
+        "items": {
+          "type": "object",
+          "properties": {}
+        },
+        "example": [
+          {
+            "id": "324dgbvk54dfgkj34",
+            "category": "sell",
+            "title": "i want sell my dog",
+            "name": "Patrick",
+            "type": "dog",
+            "price": 120,
+            "location": "Kyiv",
+            "comment": "text",
+            "favorite": true
+          },
+          {
+            "id": "324dgbvk54dfgkj34",
+            "category": "sell",
+            "title": "i want sell my dog",
+            "name": "Patrick",
+            "type": "dog",
+            "price": 120,
+            "location": "Kyiv",
+            "comment": "text",
+            "favorite": true
+          }
+        ]
+      },
+      "DeleteOwnNoticeRequest": {
+        "type": "object",
+        "required": ["id"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Notice ID",
+            "example": "23055jnb2n3b43h4jbhjb4"
+          }
+        }
+      },
+      "DeleteOwnNoticeResponse": {
+        "type": "object",
+        "items": {
+          "type": "object",
+          "properties": {}
+        },
+        "example": [
+          {
+            "id": "23055jnb2n3b43h4jbhjb4",
+            "category": "sell",
+            "title": "i want sell my dog",
+            "name": "Patrick",
+            "type": "dog",
+            "price": 120,
+            "location": "Kyiv",
+            "comment": "text",
+            "favorite": true
+          }
+        ]
+      },
+      "AddMyPetRequest": {
+        "type": "object",
+        "required": ["name", "type", "date", "file"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Pet name",
+            "example": "Niki"
+          },
+          "type": {
+            "type": "string",
+            "description": "Pet type",
+            "example": "cat"
+          },
+          "date": {
+            "type": "string",
+            "description": "Notice ID",
+            "example": "12-12-2020"
+          },
+          "file": {
+            "type": "string",
+            "description": "Photo of pet",
+            "example": "http://image348524.com.ua"
+          },
+          "comment": {
+            "type": "string",
+            "description": "comment",
+            "example": "text"
+          }
+        }
+      },
+      "AddMyPetResponse": {
+        "type": "object",
+        "items": {
+          "type": "object",
+          "properties": {}
+        },
+        "example": [
+          {
+            "id": "23055jnb2n3b43h4jbhjb4",
+            "name": "Niki",
+            "type": "cat",
+            "file": "http://image348524.com.ua",
+            "comment": "text"
+          }
+        ]
+      },
+      "DeleteMyPetRequest": {
+        "type": "object",
+        "required": ["id"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Pet ID",
+            "example": "23055jnb2n3b43h4jbhjb4"
+          }
+        }
+      },
+      "DeleteMyPetResponse": {
+        "type": "object",
+        "items": {
+          "type": "object",
+          "properties": {}
+        },
+        "example": [
+          {
+            "id": "23055jnb2n3b43h4jbhjb4",
+            "name": "Patrick",
+            "type": "dog",
+            "comment": "text"
           }
         ]
       },
