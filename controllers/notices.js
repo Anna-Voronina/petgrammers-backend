@@ -23,10 +23,10 @@ const searchNotices = async (req, res, next) => {
   if (title) {
     query.title = { $regex: title, $options: "i" };
   }
-
   const skip = (page - 1) * limit;
-  const notices = await Notice.find(query).skip(skip).limit(limit);
-  res.status(200).json(notices);
+  const data = await Notice.find(query).skip(skip).limit(limit);
+  const total = await Notice.countDocuments(query);
+  res.status(200).json({ data, total });
 };
 
 const getAllNoticesByTitle = async (req, res, next) => {
@@ -38,8 +38,8 @@ const getAllNoticesByTitle = async (req, res, next) => {
     query.title = { $regex: title, $options: "i" };
   }
   const data = await Notice.find(query).skip(skip).limit(limit);
-  //Дописати, що видаємо пустий масив якщо респонс порожній
-  res.status(200).json(data);
+  const total = await Notice.countDocuments(query);
+  res.status(200).json({ data, total });
 };
 
 //Отримати одне оголошення
@@ -49,7 +49,21 @@ const getNoticeById = async (req, res, next) => {
   if (!notice) {
     throw HttpError(404, "Notice is not found");
   }
-  res.status(200).json(notice);
+  const { owner, comments, date, location, sex, name, type } = notice;
+  const user = await User.findById(owner);
+  const { email, phone } = user;
+
+  const noticeResp = {
+    comments,
+    date,
+    location,
+    sex,
+    name,
+    type,
+    phone,
+    email,
+  };
+  res.status(200).json(noticeResp);
 };
 
 //Додати оголошення до обраних
@@ -87,10 +101,11 @@ const getFavorites = async (req, res, next) => {
   if (!id) {
     throw HttpError(404, "User by this id does not exist");
   }
-  const { page, limit } = req.query;
-  const skip = (page - 1) * limit;
-  const user = await User.findById(id).skip(skip).limit(limit);
-  res.status(200).json(user.favorites);
+  const { page = 1, limit = 12 } = req.query;
+  const user = await User.findById(id);
+  const data = user.favorites.slice((page - 1) * limit, page * limit);
+  const total = user.favorites.length;
+  res.status(200).json({ data, total });
 };
 
 //Додати власне оголошення (не закінчено, додати owner)
@@ -121,7 +136,8 @@ const getAllOwnNotices = async (req, res, next) => {
   const { _id: owner } = req.user;
   const skip = (page - 1) * limit;
   const data = await Notice.find({ owner }).skip(skip).limit(limit);
-  res.status(200).json(data);
+  const total = await Notice.countDocuments({ owner });
+  res.status(200).json({ data, total });
 };
 
 //Видалити власне оголошення
@@ -140,7 +156,8 @@ const getAllNotices = async (req, res, next) => {
   const { page = 1, limit = 12 } = req.query;
   const skip = (page - 1) * limit;
   const data = await Notice.find().skip(skip).limit(limit);
-  res.status(200).json(data);
+  const total = await Notice.countDocuments();
+  res.status(200).json({ data, total });
 };
 
 //Отримання по фільтру
@@ -167,8 +184,9 @@ const getNoticesByAgeOrGender = async (req, res, next) => {
   }
 
   const data = await Notice.find(query).skip(skip).limit(limit);
+  const total = await Notice.countDocuments(query);
 
-  res.status(200).json(data);
+  res.status(200).json({ data, total });
 };
 
 module.exports = {
