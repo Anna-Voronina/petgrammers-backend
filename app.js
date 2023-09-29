@@ -3,6 +3,7 @@ const logger = require("morgan");
 const cors = require("cors");
 const moment = require("moment");
 const fs = require("fs/promises");
+const cookieParser = require("cookie-parser");
 
 const swaggerUI = require("swagger-ui-express");
 const swaggerJson = require("./swager.json");
@@ -19,6 +20,7 @@ const app = express();
 
 const formatsLogger = app.get("env") === "development" ? "dev" : "short";
 
+app.use(cookieParser());
 app.use(logger(formatsLogger));
 app.use(cors());
 app.use(express.json());
