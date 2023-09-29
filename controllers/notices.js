@@ -31,11 +31,13 @@ const searchNotices = async (req, res, next) => {
 
 const getAllNoticesByTitle = async (req, res, next) => {
   const { title } = req.params;
+  const { page = 1, limit = 12 } = req.query;
+  const skip = (page - 1) * limit;
   const query = {};
   if (title) {
     query.title = { $regex: title, $options: "i" };
   }
-  const data = await Notice.find(query);
+  const data = await Notice.find(query).skip(skip).limit(limit);
   //Дописати, що видаємо пустий масив якщо респонс порожній
   res.status(200).json(data);
 };
@@ -85,7 +87,9 @@ const getFavorites = async (req, res, next) => {
   if (!id) {
     throw HttpError(404, "User by this id does not exist");
   }
-  const user = await User.findById(id);
+  const { page, limit } = req.query;
+  const skip = (page - 1) * limit;
+  const user = await User.findById(id).skip(skip).limit(limit);
   res.status(200).json(user.favorites);
 };
 
@@ -114,8 +118,8 @@ const addOwnNotice = async (req, res, next) => {
 //Отримання всіх власних оголошень
 const getAllOwnNotices = async (req, res, next) => {
   const { page = 1, limit = 12 } = req.query;
-  const skip = (page - 1) * limit;
   const { _id: owner } = req.user;
+  const skip = (page - 1) * limit;
   const data = await Notice.find({ owner }).skip(skip).limit(limit);
   res.status(200).json(data);
 };
@@ -133,13 +137,16 @@ const deleteOwnNotice = async (req, res, next) => {
 
 //Дістати всі оголошення
 const getAllNotices = async (req, res, next) => {
-  const data = await Notice.find();
+  const { page = 1, limit = 12 } = req.query;
+  const skip = (page - 1) * limit;
+  const data = await Notice.find().skip(skip).limit(limit);
   res.status(200).json(data);
 };
 
 //Отримання по фільтру
 const getNoticesByAgeOrGender = async (req, res, next) => {
-  const { age, sex, category } = req.query;
+  const { age, sex, category, page = 1, limit = 12 } = req.query;
+  const skip = (page - 1) * limit;
 
   const query = {};
 
@@ -159,7 +166,7 @@ const getNoticesByAgeOrGender = async (req, res, next) => {
     query.category = category;
   }
 
-  const data = await Notice.find(query);
+  const data = await Notice.find(query).skip(skip).limit(limit);
 
   res.status(200).json(data);
 };

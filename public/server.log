@@ -294,3 +294,8 @@ PATCH /api/notices/get/favorites 27-09-23_04:28:04
 PATCH /api/auth/current 27-09-23_04:29:20
 GET /api/notices/filter/age=1 27-09-23_04:30:15
 PATCH /api/notices/get/favorites 27-09-23_05:23:35
+GET /api/auth/register 29-09-23_09:23:24
+POST /api/notices/get/all 29-09-23_09:23:46
+GET /api/notices/serch/lost-found 29-09-23_09:26:02
+PATCH /api/notices/get/all 29-09-23_09:31:41
+GET /api/notices/filter/by/age=1 29-09-23_09:46:19
