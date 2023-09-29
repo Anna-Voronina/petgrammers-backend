@@ -303,3 +303,5 @@ POST /api/notice 29-09-23_11:44:19
 POST /api/notice 29-09-23_11:48:19
 POST /api/notice 29-09-23_11:49:35
 POST /api/notice 29-09-23_11:50:04
+GET /api/auth/news 29-09-23_05:15:43
+GET /api/auth/news 29-09-23_05:15:48
