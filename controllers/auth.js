@@ -1,12 +1,15 @@
 const { User } = require("../models/user");
+const RefreshToken = require("../models/sessionId");
 
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const { SECRET_KEY } = process.env;
+const { SECRET_KEY, REFRESH_SECRET_KEY } = process.env;
 
 const { HttpError, ctrlWrapper, cloudinary } = require("../helpers");
 
 const jimp = require("jimp");
+
+const cookie = require("cookie");
 
 const fs = require("fs").promises;
 
@@ -20,16 +23,9 @@ const register = async (req, res) => {
   const hashPassword = await bcrypt.hash(password, 10);
   const newUser = await User.create({ ...req.body, password: hashPassword });
 
-  const payload = {
-    id: newUser._id,
-  };
-
-  const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "23h" });
-  await User.findByIdAndUpdate(newUser._id, { token });
-
-  res
-    .status(201)
-    .json({ user: { name: newUser.name, email: newUser.email }, token });
+  res.status(201).json({
+    user: { name: newUser.name, email: newUser.email },
+  });
 };
 
 const login = async (req, res) => {
@@ -48,9 +44,31 @@ const login = async (req, res) => {
     id: user._id,
   };
 
-  const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "23h" });
-  await User.findByIdAndUpdate(user._id, { token });
-  res.json({ user: { name: user.name, email }, token });
+  const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "15m" });
+
+  const session = await RefreshToken.create({ userId: user._id });
+  await User.findByIdAndUpdate(user._id, { token, sessionId: session._id });
+
+  const payloadSession = {
+    userId: user._id,
+    sessionId: session._id,
+  };
+
+  const refreshToken = jwt.sign(payloadSession, REFRESH_SECRET_KEY, {
+    expiresIn: "30d",
+  });
+
+  res.setHeader(
+    "Set-Cookie",
+    cookie.serialize("refreshToken", refreshToken, {
+      httpOnly: true,
+      maxAge: 24 * 30 * 60 * 60,
+      sameSite: "strict",
+      secure: process.env.NODE_ENV === "production",
+    })
+  );
+
+  res.json({ user: { name: user.name, email }, token, refreshToken });
 };
 
 const getCurrent = async (req, res) => {
@@ -69,6 +87,8 @@ const getCurrent = async (req, res) => {
 const logout = async (req, res) => {
   const { _id } = req.user;
   await User.findByIdAndUpdate(_id, { token: "" });
+  await RefreshToken.deleteMany({ userId: _id });
+  res.clearCookie("refreshToken");
   res.json({
     message: "logout success",
   });
@@ -105,18 +125,19 @@ const updateAvatar = async (req, res) => {
   });
 };
 
-const refreshAccessToken = async (req, res) => {
-  const { user } = req;
-  const payload = {
-    id: user._id,
-  };
+const refreshToken = async (req, res) => {
+  const { refreshToken } = req.cookies;
 
-  const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "23h" });
+  const { userId } = jwt.verify(refreshToken, REFRESH_SECRET_KEY);
 
-  await User.findByIdAndUpdate(user._id, { token });
+  const newAccessToken = jwt.sign({ id: userId }, SECRET_KEY, {
+    expiresIn: "15m",
+  });
+
+  await User.findByIdAndUpdate(userId, { token: newAccessToken });
 
   res.json({
-    token,
+    token: newAccessToken,
   });
 };
 
@@ -127,5 +148,5 @@ module.exports = {
   logout: ctrlWrapper(logout),
   editUserForm: ctrlWrapper(editUserForm),
   updateAvatar: ctrlWrapper(updateAvatar),
-  refreshAccessToken: ctrlWrapper(refreshAccessToken),
+  refreshToken: ctrlWrapper(refreshToken),
 };
