@@ -49,12 +49,23 @@ const getNoticeById = async (req, res, next) => {
   if (!notice) {
     throw HttpError(404, "Notice is not found");
   }
-  const { owner, comments, date, location, sex, name, type, file, title } =
-    notice;
+  const {
+    owner,
+    comments,
+    date,
+    location,
+    sex,
+    name,
+    type,
+    file,
+    title,
+    category,
+  } = notice;
   const user = await User.findById(owner);
   const { email, phone } = user;
 
   const noticeResp = {
+    category,
     comments,
     date,
     location,
