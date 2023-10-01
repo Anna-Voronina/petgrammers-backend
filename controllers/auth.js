@@ -9,8 +9,6 @@ const { HttpError, ctrlWrapper, cloudinary } = require("../helpers");
 
 const jimp = require("jimp");
 
-const cookie = require("cookie");
-
 const fs = require("fs").promises;
 
 const register = async (req, res) => {
@@ -44,7 +42,7 @@ const login = async (req, res) => {
     id: user._id,
   };
 
-  const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "15m" });
+  const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "1h" });
 
   const session = await RefreshToken.create({ userId: user._id });
   await User.findByIdAndUpdate(user._id, { token, sessionId: session._id });
@@ -57,16 +55,6 @@ const login = async (req, res) => {
   const refreshToken = jwt.sign(payloadSession, REFRESH_SECRET_KEY, {
     expiresIn: "30d",
   });
-
-  res.setHeader(
-    "Set-Cookie",
-    cookie.serialize("refreshToken", refreshToken, {
-      httpOnly: true,
-      maxAge: 24 * 30 * 60 * 60,
-      sameSite: "strict",
-      secure: process.env.NODE_ENV === "production",
-    })
-  );
 
   res.json({ user: { name: user.name, email }, token, refreshToken });
 };
@@ -88,7 +76,6 @@ const logout = async (req, res) => {
   const { _id } = req.user;
   await User.findByIdAndUpdate(_id, { token: "" });
   await RefreshToken.deleteMany({ userId: _id });
-  res.clearCookie("refreshToken");
   res.json({
     message: "logout success",
   });
@@ -118,7 +105,7 @@ const updateAvatar = async (req, res) => {
   });
 
   await fs.unlink(filepath);
-  const result = await User.findByIdAndUpdate(owner, { avatarURL });
+  await User.findByIdAndUpdate(owner, { avatarURL });
 
   res.json({
     avatarURL,
@@ -126,12 +113,12 @@ const updateAvatar = async (req, res) => {
 };
 
 const refreshToken = async (req, res) => {
-  const { refreshToken } = req.cookies;
+  const { refreshToken } = req.body;
 
   const { userId } = jwt.verify(refreshToken, REFRESH_SECRET_KEY);
 
   const newAccessToken = jwt.sign({ id: userId }, SECRET_KEY, {
-    expiresIn: "15m",
+    expiresIn: "1h",
   });
 
   await User.findByIdAndUpdate(userId, { token: newAccessToken });

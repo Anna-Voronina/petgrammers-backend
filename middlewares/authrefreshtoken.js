@@ -9,7 +9,7 @@ const RefreshToken = require("../models/sessionId");
 
 const authRefreshToken = async (req, res, next) => {
   try {
-    const refreshToken = req.cookies.refreshToken;
+    const { refreshToken } = req.body;
 
     if (!refreshToken) {
       throw HttpError(401, "No refresh token provided");
