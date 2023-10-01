@@ -42,7 +42,7 @@ const login = async (req, res) => {
     id: user._id,
   };
 
-  const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "1h" });
+  const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "1m" });
 
   const session = await RefreshToken.create({ userId: user._id });
   await User.findByIdAndUpdate(user._id, { token, sessionId: session._id });
@@ -53,7 +53,7 @@ const login = async (req, res) => {
   };
 
   const refreshToken = jwt.sign(payloadSession, REFRESH_SECRET_KEY, {
-    expiresIn: "30d",
+    expiresIn: "5m",
   });
 
   res.json({ user: { name: user.name, email }, token, refreshToken });
@@ -118,7 +118,7 @@ const refreshToken = async (req, res) => {
   const { userId } = jwt.verify(refreshToken, REFRESH_SECRET_KEY);
 
   const newAccessToken = jwt.sign({ id: userId }, SECRET_KEY, {
-    expiresIn: "1h",
+    expiresIn: "1m",
   });
 
   await User.findByIdAndUpdate(userId, { token: newAccessToken });
