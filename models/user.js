@@ -49,11 +49,11 @@ const userSchema = new Schema(
     },
     birthday: {
       type: String,
-      default: "01.01.1970",
+      default: "01-01-1970",
     },
     city: {
       type: String,
-      default: "city Name",
+      default: "Kyiv",
     },
     favorites: {
       type: Array,
