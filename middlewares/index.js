@@ -3,6 +3,7 @@ const isValidId = require("./isValiId");
 const formatDate = require("./formatDate");
 const authenticate = require("./authenticate");
 const upload = require("./upload");
+const authRefreshToken = require("./authrefreshtoken");
 
 module.exports = {
   validateBody,
@@ -10,4 +11,5 @@ module.exports = {
   formatDate,
   authenticate,
   upload,
+  authRefreshToken,
 };

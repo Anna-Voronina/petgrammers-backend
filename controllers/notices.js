@@ -23,21 +23,23 @@ const searchNotices = async (req, res, next) => {
   if (title) {
     query.title = { $regex: title, $options: "i" };
   }
-
   const skip = (page - 1) * limit;
-  const notices = await Notice.find(query).skip(skip).limit(limit);
-  res.status(200).json(notices);
+  const data = await Notice.find(query).skip(skip).limit(limit);
+  const total = await Notice.countDocuments(query);
+  res.status(200).json({ data, total });
 };
 
 const getAllNoticesByTitle = async (req, res, next) => {
   const { title } = req.params;
+  const { page = 1, limit = 12 } = req.query;
+  const skip = (page - 1) * limit;
   const query = {};
   if (title) {
     query.title = { $regex: title, $options: "i" };
   }
-  const data = await Notice.find(query);
-  //Дописати, що видаємо пустий масив якщо респонс порожній
-  res.status(200).json(data);
+  const data = await Notice.find(query).skip(skip).limit(limit);
+  const total = await Notice.countDocuments(query);
+  res.status(200).json({ data, total });
 };
 
 //Отримати одне оголошення
@@ -47,7 +49,37 @@ const getNoticeById = async (req, res, next) => {
   if (!notice) {
     throw HttpError(404, "Notice is not found");
   }
-  res.status(200).json(notice);
+  const {
+    _id,
+    owner,
+    comments,
+    date,
+    location,
+    sex,
+    name,
+    type,
+    file,
+    title,
+    category,
+  } = notice;
+  const user = await User.findById(owner);
+  const { email, phone } = user;
+
+  const noticeResp = {
+    _id,
+    category,
+    comments,
+    date,
+    location,
+    sex,
+    name,
+    type,
+    file,
+    title,
+    phone,
+    email,
+  };
+  res.status(200).json(noticeResp);
 };
 
 //Додати оголошення до обраних
@@ -82,11 +114,91 @@ const changeNoticeFavorites = async (req, res, next) => {
 //Отримання всіх оголошень які обрані
 const getFavorites = async (req, res, next) => {
   const { id } = req.user;
+  const { page = 1, limit = 12, age, sex, title } = req.query;
+
   if (!id) {
     throw HttpError(404, "User by this id does not exist");
   }
+
   const user = await User.findById(id);
-  res.status(200).json(user.favorites);
+  let data = user.favorites;
+
+  if (age) {
+    const ageArray = Array.isArray(age) ? age : [age];
+
+    data = data.filter((fav) => {
+      return ageArray.some((a) => {
+        if (a === "1") {
+          return fav.age <= 1;
+        } else if (a === "2") {
+          return fav.age <= 2;
+        } else if (a === ">2") {
+          return fav.age > 2;
+        }
+      });
+    });
+  }
+
+  if (sex) {
+    const sexArray = Array.isArray(sex) ? sex : [sex];
+    data = data.filter((fav) => sexArray.includes(fav.sex));
+  }
+
+  if (title) {
+    const regex = new RegExp(title, "i");
+    data = data.filter((fav) => regex.test(fav.title));
+  }
+
+  const total = data.length;
+  data = data.slice((page - 1) * limit, page * limit);
+
+  res.status(200).json({ data, total });
+};
+
+//Отримання всіх власних оголошень
+const getAllOwnNotices = async (req, res, next) => {
+  const { page = 1, limit = 12, age, sex, title } = req.query;
+  const { _id: owner } = req.user;
+  const skip = (page - 1) * limit;
+
+  const query = { owner };
+
+  if (age) {
+    if (Array.isArray(age)) {
+      query.$or = age.map((a) => {
+        if (a === "1") {
+          return { age: { $lte: 1 } };
+        } else if (a === "2") {
+          return { age: { $lte: 2 } };
+        } else if (a === ">2") {
+          return { age: { $gt: 2 } };
+        }
+      });
+    } else {
+      if (age === "1") {
+        query.age = { $lte: 1 };
+      } else if (age === "2") {
+        query.age = { $lte: 2 };
+      } else if (age === ">2") {
+        query.age = { $gt: 2 };
+      }
+    }
+  }
+
+  if (sex) {
+    if (sex === "male" || sex === "female") {
+      query.sex = sex;
+    }
+  }
+
+  if (title) {
+    query.title = { $regex: title, $options: "i" };
+  }
+
+  const data = await Notice.find(query).skip(skip).limit(limit);
+
+  const total = await Notice.countDocuments(query);
+  res.status(200).json({ data, total });
 };
 
 //Додати власне оголошення (не закінчено, додати owner)
@@ -111,15 +223,6 @@ const addOwnNotice = async (req, res, next) => {
   res.status(201).json(data);
 };
 
-//Отримання всіх власних оголошень
-const getAllOwnNotices = async (req, res, next) => {
-  const { page = 1, limit = 12 } = req.query;
-  const skip = (page - 1) * limit;
-  const { _id: owner } = req.user;
-  const data = await Notice.find({ owner }).skip(skip).limit(limit);
-  res.status(200).json(data);
-};
-
 //Видалити власне оголошення
 const deleteOwnNotice = async (req, res, next) => {
   const { id } = req.params;
@@ -133,35 +236,60 @@ const deleteOwnNotice = async (req, res, next) => {
 
 //Дістати всі оголошення
 const getAllNotices = async (req, res, next) => {
-  const data = await Notice.find();
-  res.status(200).json(data);
+  const { page = 1, limit = 12 } = req.query;
+  const skip = (page - 1) * limit;
+  const data = await Notice.find().skip(skip).limit(limit);
+  const total = await Notice.countDocuments();
+  res.status(200).json({ data, total });
 };
 
 //Отримання по фільтру
 const getNoticesByAgeOrGender = async (req, res, next) => {
-  const { age, sex, category } = req.query;
+  const { age, sex, category, title, page = 1, limit = 12 } = req.query;
+  const skip = (page - 1) * limit;
 
   const query = {};
 
-  if (age === "1") {
-    query.age = { $lte: 1 };
-  } else if (age === "2") {
-    query.age = { $lte: 2 };
-  } else if (age === ">2") {
-    query.age = { $gt: 2 };
+  if (age) {
+    if (Array.isArray(age)) {
+      query.$or = age.map((a) => {
+        if (a === "1") {
+          return { age: { $lte: 1 } };
+        } else if (a === "2") {
+          return { age: { $lte: 2 } };
+        } else if (a === ">2") {
+          return { age: { $gt: 2 } };
+        }
+      });
+    } else {
+      if (age === "1") {
+        query.age = { $lte: 1 };
+      } else if (age === "2") {
+        query.age = { $lte: 2 };
+      } else if (age === ">2") {
+        query.age = { $gt: 2 };
+      }
+    }
   }
 
   if (sex) {
-    query.sex = sex;
+    if (sex === "male" || sex === "female") {
+      query.sex = sex;
+    }
+  }
+
+  if (title) {
+    query.title = { $regex: title, $options: "i" };
   }
 
   if (category) {
     query.category = category;
   }
 
-  const data = await Notice.find(query);
+  const data = await Notice.find(query).skip(skip).limit(limit);
+  const total = await Notice.countDocuments(query);
 
-  res.status(200).json(data);
+  res.status(200).json({ data, total });
 };
 
 module.exports = {

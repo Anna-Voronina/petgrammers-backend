@@ -3,6 +3,7 @@ const { Schema, model } = require("mongoose");
 const { handleMongooseError } = require("../helpers");
 
 const Joi = require("joi");
+const { default: mongoose } = require("mongoose");
 
 const nameRegexp = /^[a-zA-Z]{2,16}$/;
 
@@ -18,6 +19,10 @@ const cityRegexp = /^[A-Za-z\s]+$/;
 
 const userSchema = new Schema(
   {
+    sessionId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "sessionId",
+    },
     avatarURL: {
       type: String,
       default:
@@ -44,11 +49,11 @@ const userSchema = new Schema(
     },
     birthday: {
       type: String,
-      default: "01.01.1970",
+      default: "01-01-1970",
     },
     city: {
       type: String,
-      default: "city Name",
+      default: "Kyiv",
     },
     favorites: {
       type: Array,

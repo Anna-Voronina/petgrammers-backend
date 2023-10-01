@@ -1,6 +1,11 @@
 const express = require("express");
 
-const { validateBody, authenticate, upload } = require("../../middlewares");
+const {
+  validateBody,
+  authenticate,
+  authRefreshToken,
+  upload,
+} = require("../../middlewares");
 
 const ctrl = require("../../controllers/auth");
 
@@ -30,6 +35,6 @@ router.patch(
   ctrl.updateAvatar
 );
 
-router.post("/refresh-token", authenticate, ctrl.refreshAccessToken);
+router.post("/refresh-token", authRefreshToken, ctrl.refreshToken);
 
 module.exports = router;

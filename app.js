@@ -3,6 +3,7 @@ const logger = require("morgan");
 const cors = require("cors");
 const moment = require("moment");
 const fs = require("fs/promises");
+const cookieParser = require("cookie-parser");
 
 const swaggerUI = require("swagger-ui-express");
 const swaggerJson = require("./swager.json");
@@ -15,11 +16,13 @@ const petRouter = require("./routes/api/pets");
 const userInfoRouter = require("./routes/api/userInfo");
 const friendsRouter = require("./routes/api/friends");
 const newsRouter = require("./routes/api/news");
+// const googleAuth = require("./routes/api/googleAuth")
 
 const app = express();
 
 const formatsLogger = app.get("env") === "development" ? "dev" : "short";
 
+app.use(cookieParser());
 app.use(logger(formatsLogger));
 app.use(cors());
 app.use(express.json());
@@ -32,6 +35,7 @@ app.use("/api/user-info", userInfoRouter);
 app.use("/api/friends", friendsRouter);
 app.use("/api/news", newsRouter);
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerJson));
+// app.use("/api/google", googleAuth);
 
 app.use((req, res, next) => {
   const { method, url } = req;
