@@ -124,16 +124,20 @@ const getFavorites = async (req, res, next) => {
   let data = user.favorites;
 
   if (age) {
-    if (age === "1") {
-      data = data.filter((fav) => fav.age <= 1);
-    } else if (age === "2") {
-      data = data.filter((fav) => fav.age <= 2);
-    } else if (age === ">2") {
-      data = data.filter((fav) => fav.age > 2);
-    }
-  }
+    const ageArray = Array.isArray(age) ? age : [age];
 
-  console.log(age);
+    data = data.filter((fav) => {
+      return ageArray.some((a) => {
+        if (a === "1") {
+          return fav.age <= 1;
+        } else if (a === "2") {
+          return fav.age <= 2;
+        } else if (a === ">2") {
+          return fav.age > 2;
+        }
+      });
+    });
+  }
 
   if (sex) {
     const sexArray = Array.isArray(sex) ? sex : [sex];
