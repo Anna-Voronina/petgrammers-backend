@@ -50,6 +50,7 @@ const getNoticeById = async (req, res, next) => {
     throw HttpError(404, "Notice is not found");
   }
   const {
+    _id,
     owner,
     comments,
     date,
@@ -65,6 +66,7 @@ const getNoticeById = async (req, res, next) => {
   const { email, phone } = user;
 
   const noticeResp = {
+    _id,
     category,
     comments,
     date,
