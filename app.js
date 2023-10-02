@@ -16,7 +16,7 @@ const petRouter = require("./routes/api/pets");
 const userInfoRouter = require("./routes/api/userInfo");
 const friendsRouter = require("./routes/api/friends");
 const newsRouter = require("./routes/api/news");
-// const googleAuth = require("./routes/api/googleAuth")
+const googleRouter = require("./routes/api/googleAuth");
 
 const app = express();
 
@@ -28,6 +28,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
 
+app.use("/api/auth", googleRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/notices", noticeRouter);
 app.use("/api/pets", petRouter);
@@ -35,7 +36,6 @@ app.use("/api/user-info", userInfoRouter);
 app.use("/api/friends", friendsRouter);
 app.use("/api/news", newsRouter);
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerJson));
-// app.use("/api/google", googleAuth);
 
 app.use((req, res, next) => {
   const { method, url } = req;

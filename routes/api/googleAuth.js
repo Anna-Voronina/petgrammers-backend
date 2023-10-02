@@ -1,11 +1,11 @@
-// const express = require("express");
+const express = require("express");
 
-// const ctrl = require("../../controllers/google");
+const ctrl = require("../../controllers/google");
 
-// const router = express.Router();
+const router = express.Router();
 
-// router.get("/", ctrl.googleAuth);
+router.get("/google", ctrl.googleAuth);
 
-// router.get("/-redirect", ctrl.googleRedirect);
+router.get("/google-redirect", ctrl.googleRedirect);
 
-// module.export = router;
+module.exports = router;
