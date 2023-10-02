@@ -14,6 +14,7 @@ const {
   BASE_URL,
   SECRET_KEY,
   REFRESH_SECRET_KEY,
+  FRONTEND_URL_FULL,
 } = process.env;
 
 const googleAuth = async (req, res, next) => {
@@ -52,30 +53,33 @@ const googleRedirect = async (req, res, next) => {
   });
 
   const userData = await axios({
-    url: "https://googleapis.com/o/oauth2/v2/userinfo",
+    url: "https://www.googleapis.com/oauth2/v2/userinfo",
     method: "get",
     headers: {
       Authorization: `Bearer ${tokenData.data.access_token}`,
     },
   });
+  // console.log(userData);
 
   if (!userData || !userData.data || !userData.data.email) {
     throw HttpError(401, "Unable to get user data from Google");
   }
-  const { email } = userData.data;
+  const { email, name } = userData.data;
   const user = await User.findOne({ email });
-  if (!user) {
-    await User.create({ ...req.body });
-  }
 
+  if (!user) {
+    await User.create({ name, email });
+  }
+  console.log("check");
   const payload = {
     id: user._id,
   };
   const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "1h" });
-  console.log(token);
+  console.log("token");
   const payloadSession = {
     userId: user._id,
   };
+
   await RefreshToken.create({ userId: user._id });
   const refreshToken = jwt.sign(payloadSession, REFRESH_SECRET_KEY, {
     expiresIn: "30d",
@@ -83,11 +87,11 @@ const googleRedirect = async (req, res, next) => {
   console.log(refreshToken);
 
   return res.redirect(
-    `${FRONTEND_URL}/?name=${encodeURIComponent(
-      user.name
-    )}&email=${encodeURIComponent(email)}&token=${encodeURIComponent(
-      token
-    )}&refreshToken=${encodeURIComponent(refreshToken)}`
+    `${FRONTEND_URL}/public?email=${encodeURIComponent(
+      email
+    )}&token=${encodeURIComponent(token)}&refreshToken=${encodeURIComponent(
+      refreshToken
+    )}`
   );
 };
 
