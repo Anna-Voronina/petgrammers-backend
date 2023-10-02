@@ -8,7 +8,11 @@ const addNoticeSchema = Joi.object({
   name: Joi.string().required(),
   date: Joi.string().required(),
   type: Joi.string().required(),
-  file: Joi.string(),
+  file: Joi.object({
+    data: Joi.binary()
+      .max(3 * 1024 * 1024)
+      .required(),
+  }),
   sex: Joi.string().when("category", {
     is: ["sell", "lost-found", "in-good-hands"],
     then: Joi.string().valid("male", "female").required(),
