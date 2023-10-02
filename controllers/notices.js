@@ -50,6 +50,7 @@ const getNoticeById = async (req, res, next) => {
     throw HttpError(404, "Notice is not found");
   }
   const {
+    _id,
     owner,
     comments,
     date,
@@ -65,6 +66,7 @@ const getNoticeById = async (req, res, next) => {
   const { email, phone } = user;
 
   const noticeResp = {
+    _id,
     category,
     comments,
     date,
@@ -112,13 +114,90 @@ const changeNoticeFavorites = async (req, res, next) => {
 //Отримання всіх оголошень які обрані
 const getFavorites = async (req, res, next) => {
   const { id } = req.user;
+  const { page = 1, limit = 12, age, sex, title } = req.query;
+
   if (!id) {
     throw HttpError(404, "User by this id does not exist");
   }
-  const { page = 1, limit = 12 } = req.query;
+
   const user = await User.findById(id);
-  const data = user.favorites.slice((page - 1) * limit, page * limit);
-  const total = user.favorites.length;
+  let data = user.favorites;
+
+  if (age) {
+    const ageArray = Array.isArray(age) ? age : [age];
+
+    data = data.filter((fav) => {
+      return ageArray.some((a) => {
+        if (a === "1") {
+          return fav.age <= 1;
+        } else if (a === "2") {
+          return fav.age <= 2;
+        } else if (a === ">2") {
+          return fav.age > 2;
+        }
+      });
+    });
+  }
+
+  if (sex) {
+    const sexArray = Array.isArray(sex) ? sex : [sex];
+    data = data.filter((fav) => sexArray.includes(fav.sex));
+  }
+
+  if (title) {
+    const regex = new RegExp(title, "i");
+    data = data.filter((fav) => regex.test(fav.title));
+  }
+
+  const total = data.length;
+  data = data.slice((page - 1) * limit, page * limit);
+
+  res.status(200).json({ data, total });
+};
+
+//Отримання всіх власних оголошень
+const getAllOwnNotices = async (req, res, next) => {
+  const { page = 1, limit = 12, age, sex, title } = req.query;
+  const { _id: owner } = req.user;
+  const skip = (page - 1) * limit;
+
+  const query = { owner };
+
+  if (age) {
+    if (Array.isArray(age)) {
+      query.$or = age.map((a) => {
+        if (a === "1") {
+          return { age: { $lte: 1 } };
+        } else if (a === "2") {
+          return { age: { $lte: 2 } };
+        } else if (a === ">2") {
+          return { age: { $gt: 2 } };
+        }
+      });
+    } else {
+      if (age === "1") {
+        query.age = { $lte: 1 };
+      } else if (age === "2") {
+        query.age = { $lte: 2 };
+      } else if (age === ">2") {
+        query.age = { $gt: 2 };
+      }
+    }
+  }
+
+  if (sex) {
+    if (sex === "male" || sex === "female") {
+      query.sex = sex;
+    }
+  }
+
+  if (title) {
+    query.title = { $regex: title, $options: "i" };
+  }
+
+  const data = await Notice.find(query).skip(skip).limit(limit);
+
+  const total = await Notice.countDocuments(query);
   res.status(200).json({ data, total });
 };
 
@@ -144,16 +223,6 @@ const addOwnNotice = async (req, res, next) => {
   res.status(201).json(data);
 };
 
-//Отримання всіх власних оголошень
-const getAllOwnNotices = async (req, res, next) => {
-  const { page = 1, limit = 12 } = req.query;
-  const { _id: owner } = req.user;
-  const skip = (page - 1) * limit;
-  const data = await Notice.find({ owner }).skip(skip).limit(limit);
-  const total = await Notice.countDocuments({ owner });
-  res.status(200).json({ data, total });
-};
-
 //Видалити власне оголошення
 const deleteOwnNotice = async (req, res, next) => {
   const { id } = req.params;
@@ -176,21 +245,41 @@ const getAllNotices = async (req, res, next) => {
 
 //Отримання по фільтру
 const getNoticesByAgeOrGender = async (req, res, next) => {
-  const { age, sex, category, page = 1, limit = 12 } = req.query;
+  const { age, sex, category, title, page = 1, limit = 12 } = req.query;
   const skip = (page - 1) * limit;
 
   const query = {};
 
-  if (age === "1") {
-    query.age = { $lte: 1 };
-  } else if (age === "2") {
-    query.age = { $lte: 2 };
-  } else if (age === ">2") {
-    query.age = { $gt: 2 };
+  if (age) {
+    if (Array.isArray(age)) {
+      query.$or = age.map((a) => {
+        if (a === "1") {
+          return { age: { $lte: 1 } };
+        } else if (a === "2") {
+          return { age: { $lte: 2 } };
+        } else if (a === ">2") {
+          return { age: { $gt: 2 } };
+        }
+      });
+    } else {
+      if (age === "1") {
+        query.age = { $lte: 1 };
+      } else if (age === "2") {
+        query.age = { $lte: 2 };
+      } else if (age === ">2") {
+        query.age = { $gt: 2 };
+      }
+    }
   }
 
   if (sex) {
-    query.sex = sex;
+    if (sex === "male" || sex === "female") {
+      query.sex = sex;
+    }
+  }
+
+  if (title) {
+    query.title = { $regex: title, $options: "i" };
   }
 
   if (category) {

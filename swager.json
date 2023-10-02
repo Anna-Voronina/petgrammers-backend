@@ -11,7 +11,7 @@
   },
   "consumes": ["application/json"],
   "produces": ["application/json"],
-  "servers": [{ "url": "http://localhost:3000" }],
+  "servers": [{ "url": "http://localhost:3000//" }],
   "tags": [
     {
       "name": "Auth",
@@ -335,17 +335,6 @@
             "type": "string"
           }
         ],
-        "requestBody": {
-          "description": "Category object",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/GetAllNoticesRequest"
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
             "description": "Successful operation",
@@ -388,17 +377,6 @@
             "type": "string"
           }
         ],
-        "requestBody": {
-          "description": "Category and title object",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/GetAllNitecesByCategoryAndTitleRequest"
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
             "description": "Successful operation",
@@ -434,17 +412,6 @@
             "type": "string"
           }
         ],
-        "requestBody": {
-          "description": "Get notice by ID",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/GetByIdRequest"
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
             "description": "Successful operation",
@@ -480,17 +447,6 @@
             "type": "string"
           }
         ],
-        "requestBody": {
-          "description": "Get notice by ID",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SearchByTitleRequest"
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
             "description": "Successful operation",
@@ -522,32 +478,25 @@
             "name": "age",
             "in": "path",
             "description": "Pet age",
-            "type": "string"
+            "type": "string",
+            "default": "1"
           },
           {
             "name": "sex",
             "in": "path",
             "description": "Pet sex",
-            "type": "string"
+            "type": "string",
+            "default": "male"
           },
           {
             "name": "category",
             "in": "path",
             "description": "Pet category",
-            "type": "string"
+            "type": "string",
+            "default": "sell"
           }
         ],
-        "requestBody": {
-          "description": "Get notice by ID",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/FilterPetsByAgeOrSexRequest"
-              }
-            }
-          }
-        },
+
         "responses": {
           "200": {
             "description": "Successful operation",
@@ -725,8 +674,32 @@
         "summary": "Get favorites Notices",
         "parameters": [],
         "security": [{ "Bearer": [] }],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/getFavoritesResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (invalid request body)",
+            "content": {}
+          }
+        }
+      }
+    },
+    "api/notices/get/favorites?age={age}&title={title}&sex={sex}": {
+      "get": {
+        "tags": ["Notices"],
+        "summary": "Get favorites notices by filter",
+        "parameters": [],
+        "security": [{ "Bearer": [] }],
         "requestBody": {
-          "description": "Get favorotes notices",
+          "description": "Get favorites notices by filter",
           "required": true,
           "content": {
             "application/json": {
@@ -758,6 +731,30 @@
       "get": {
         "tags": ["Notices"],
         "summary": "Get all own Notices",
+        "parameters": [],
+        "security": [{ "Bearer": [] }],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/getAllOwnNoticesResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request ",
+            "content": {}
+          }
+        }
+      }
+    },
+    "api/notices?age={age}&sex={sex}&title={title}": {
+      "get": {
+        "tags": ["Notices"],
+        "summary": "Get all own notices by filter",
         "parameters": [],
         "security": [{ "Bearer": [] }],
         "responses": {
@@ -981,24 +978,13 @@
         "tags": ["News"],
         "summary": "Get news",
         "parameters": [],
-        "requestBody": {
-          "description": "Get news",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/"
-              }
-            }
-          }
-        },
         "responses": {
           "201": {
             "description": "Successful operation",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/"
+                  "$ref": "#/components/schemas/getNewsResponse"
                 }
               }
             }
@@ -1014,18 +1000,15 @@
       "get": {
         "tags": ["News"],
         "summary": "Get news by title",
-        "parameters": [],
-        "requestBody": {
-          "description": "Get news by title",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/"
-              }
-            }
+        "parameters": [
+          {
+            "name": "title",
+            "in": "path",
+            "description": "title news",
+            "required": true,
+            "type": "string"
           }
-        },
+        ],
         "responses": {
           "200": {
             "description": "Successful operation",
@@ -1049,34 +1032,19 @@
         "tags": ["Friends"],
         "summary": "Get friends",
         "parameters": [],
-        "requestBody": {
-          "description": "Get friends",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/"
-              }
-            }
-          }
-        },
         "responses": {
-          "201": {
+          "200": {
             "description": "Successful operation",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/"
+                  "$ref": "#/components/schemas/getFriendsResponse"
                 }
               }
             }
           },
           "400": {
             "description": "Bad request (invalid request body)",
-            "content": {}
-          },
-          "409": {
-            "description": "Provided email already exists",
             "content": {}
           }
         }
@@ -1085,17 +1053,6 @@
   },
   "components": {
     "schemas": {
-      "GetAllNoticesRequest": {
-        "type": "object",
-        "required": ["category"],
-        "properties": {
-          "category": {
-            "type": "string",
-            "description": "Category notice",
-            "example": "sell"
-          }
-        }
-      },
       "GetAllNoticesResponse": {
         "type": "array",
         "items": {
@@ -1103,8 +1060,7 @@
           "properties": {
             "category": {
               "type": "string",
-              "description": "Category notice",
-              "format": "string"
+              "description": "Category notice"
             }
           }
         },
@@ -1117,22 +1073,6 @@
           },
           { "category": "sell", "name": "Luna", "type": "cat", "price": 234 }
         ]
-      },
-      "GetAllNitecesByCategoryAndTitleRequest": {
-        "type": "object",
-        "required": ["category", "title"],
-        "properties": {
-          "category": {
-            "type": "string",
-            "description": "Category notice",
-            "example": "sell"
-          },
-          "title": {
-            "type": "string",
-            "description": "Title of notice",
-            "example": "sell dog"
-          }
-        }
       },
       "GetAllNitecesByCategoryAndTitleResponse": {
         "type": "array",
@@ -1157,17 +1097,6 @@
           }
         ]
       },
-      "GetByIdRequest": {
-        "type": "object",
-        "required": ["id"],
-        "properties": {
-          "id": {
-            "type": "string",
-            "description": "Id of notice",
-            "example": "324dgbvk54dfgkj34"
-          }
-        }
-      },
       "GetByIdResponse": {
         "type": "object",
         "items": {
@@ -1176,25 +1105,22 @@
         },
         "example": [
           {
-            "id": "324dgbvk54dfgkj34",
+            "id": "6517bc1a7c80aa82063b7fb0",
             "category": "sell",
-            "title": "i want sell my dog",
-            "name": "Patrick",
-            "type": "dog",
-            "price": 120
+            "title": "cute ferret",
+            "name": "Max",
+            "date": "11-05-2022",
+            "age": 1,
+            "type": "ferret",
+            "file": "http://res.cloudinary.com/dofau6dtf/image/upload/v1696054298/notices/vkmibkcoydvqlbqxoc2l.jpg",
+            "sex": "male",
+            "location": "Mykolaiv",
+            "price": 750,
+            "comments": "Never give up!!",
+            "favorite": false,
+            "owner": "651679bcf7bee055b200c446"
           }
         ]
-      },
-      "SearchByTitleRequest": {
-        "type": "object",
-        "required": ["title"],
-        "properties": {
-          "title": {
-            "type": "string",
-            "description": "Title of notice",
-            "example": "cute dog"
-          }
-        }
       },
       "SearchByTitleResponse": {
         "type": "object",
@@ -1204,33 +1130,22 @@
         },
         "example": [
           {
-            "id": "324dgbvk54dfgkj34",
+            "id": "6517bc1a7c80aa82063b7fb0",
             "category": "sell",
-            "title": "cute dog",
-            "name": "Patrick",
-            "type": "dog",
-            "price": 120,
-            "location": "Kyiv",
-            "comment": "text",
-            "favorite": false
+            "title": "cute ferret",
+            "name": "Max",
+            "date": "11-05-2022",
+            "age": 1,
+            "type": "ferret",
+            "file": "http://res.cloudinary.com/dofau6dtf/image/upload/v1696054298/notices/vkmibkcoydvqlbqxoc2l.jpg",
+            "sex": "male",
+            "location": "Mykolaiv",
+            "price": 750,
+            "comments": "Never give up!!",
+            "favorite": false,
+            "owner": "651679bcf7bee055b200c446"
           }
         ]
-      },
-      "FilterPetsByAgeOrSexRequest": {
-        "type": "object",
-        "required": ["age", "sex"],
-        "properties": {
-          "age": {
-            "type": "string",
-            "description": "Pet age",
-            "example": "1"
-          },
-          "sex": {
-            "type": "string",
-            "description": "Pet sex",
-            "example": "male"
-          }
-        }
       },
       "FilterPetsByAgeOrSexResponse": {
         "type": "object",
@@ -1240,17 +1155,20 @@
         },
         "example": [
           {
-            "id": "324dgbvk54dfgkj34",
+            "_id": "6517c16cdae9d89e7c3d307d",
             "category": "sell",
-            "title": "cute dog",
-            "name": "Patrick",
-            "type": "dog",
-            "age": 0,
+            "title": "beautiful hamster",
+            "name": "Mars",
+            "date": "11-05-2023",
+            "age": 0.4,
+            "type": "hamster",
+            "file": "http://res.cloudinary.com/dofau6dtf/image/upload/v1696055660/notices/krninlfkdq46v25jymik.jpg",
             "sex": "male",
-            "price": 120,
-            "location": "Kyiv",
-            "comment": "text",
-            "favorite": false
+            "location": "Lviv",
+            "price": 250,
+            "comments": "hamster",
+            "favorite": false,
+            "owner": "651679bcf7bee055b200c446"
           }
         ]
       },
@@ -1333,6 +1251,26 @@
             "example": true
           }
         }
+      },
+      "getFavoritesResponse": {
+        "type": "object",
+        "items": {
+          "type": "object",
+          "properties": {}
+        },
+        "example": [
+          {
+            "id": "324dgbvk54dfgkj34",
+            "category": "sell",
+            "title": "i want sell my dog",
+            "name": "Patrick",
+            "type": "dog",
+            "price": 120,
+            "location": "Kyiv",
+            "comment": "text",
+            "favorite": true
+          }
+        ]
       },
       "AddOrDeleteNoticeFromFavoriteResponse": {
         "type": "object",
@@ -1486,6 +1424,66 @@
             "name": "Patrick",
             "type": "dog",
             "comment": "text"
+          }
+        ]
+      },
+      "getNewsResponse": {
+        "type": "object",
+        "items": {
+          "type": "object",
+          "properties": {}
+        },
+        "example": [
+          {
+            "_id": "6512ea308bbef162d573e96c",
+            "title": "Purina",
+            "url": "https://www.purina.ua/",
+            "addressUrl": null,
+            "imageUrl": "https://storage.googleapis.com/kidslikev2_bucket/pets-support/images/sponsors/frame_290.png",
+            "address": null,
+            "workDays": null,
+            "phone": "+380800500950",
+            "email": "info@ua.nestle.com"
+          }
+        ]
+      },
+      "getNewsByTitleResponseType": {
+        "type": "object",
+        "items": {
+          "type": "object",
+          "properties": {}
+        },
+        "example": [
+          {
+            "_id": "6512ea308bbef162d573e96c",
+            "title": "Purina",
+            "url": "https://www.purina.ua/",
+            "addressUrl": null,
+            "imageUrl": "https://storage.googleapis.com/kidslikev2_bucket/pets-support/images/sponsors/frame_290.png",
+            "address": null,
+            "workDays": null,
+            "phone": "+380800500950",
+            "email": "info@ua.nestle.com"
+          }
+        ]
+      },
+      "getFriendsResponse": {
+        "type": "object",
+        "items": {
+          "type": "object",
+          "properties": {}
+        },
+        "example": [
+          {
+            "_id": "6512ea308bbef162d573e96c",
+            "title": "Purina",
+            "url": "https://www.purina.ua/",
+            "addressUrl": null,
+            "imageUrl": "https://storage.googleapis.com/kidslikev2_bucket/pets-support/images/sponsors/frame_290.png",
+            "address": null,
+            "workDays": null,
+            "phone": "+380800500950",
+            "email": "info@ua.nestle.com"
           }
         ]
       },

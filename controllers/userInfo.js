@@ -15,6 +15,7 @@ const getUserInfo = async (req, res, next) => {
     city: user.city,
     avatarURL: user.avatarURL,
     pets: [...userPets],
+    favorites: user.favorites,
   };
 
   res.json(userInfo).status(200);
