@@ -9,7 +9,7 @@ const addNoticeSchema = Joi.object({
   date: Joi.string().required(),
   type: Joi.string().required(),
   file: Joi.object({
-    data: Joi.binary()
+    size: Joi.binary()
       .max(3 * 1024 * 1024)
       .required(),
   }),
