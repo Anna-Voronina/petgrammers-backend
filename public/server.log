@@ -349,3 +349,7 @@ POST /api/auth/user 01-10-23_02:41:30
 
 GET /api/auth/null 02-10-23_09:05:49
 GET /api/auth/null 02-10-23_09:05:50
+GET /favicon.ico 03-10-23_10:23:52
+PATCH /api/auth/editUserForm 03-10-23_06:13:29
+PATCH /api/auth/editUserForm 03-10-23_06:13:30
+PATCH /api/auth/editUserForm 03-10-23_06:13:44

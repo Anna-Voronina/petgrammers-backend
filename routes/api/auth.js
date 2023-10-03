@@ -9,7 +9,7 @@ const {
 
 const ctrl = require("../../controllers/auth");
 
-const { schemas } = require("../../models/user");
+const { schemas } = require("../../schemas/auth");
 
 const router = express.Router();
 

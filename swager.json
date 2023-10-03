@@ -107,12 +107,8 @@
               }
             }
           },
-          "400": {
-            "description": "Bad request (invalid request body)",
-            "content": {}
-          },
-          "409": {
-            "description": "Provided email already exists",
+          "401": {
+            "description": "Bad request (Password is invalid / Email is invalid)",
             "content": {}
           }
         }
@@ -124,34 +120,23 @@
         "summary": "User current",
         "parameters": [],
         "security": [{ "Bearer": [] }],
-        "requestBody": {
-          "description": "User current object",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/RegistrationRequest"
-              }
-            }
-          }
-        },
         "responses": {
-          "201": {
+          "200": {
             "description": "Successful operation",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/RegistrationResponse"
+                  "$ref": "#/components/schemas/GetCurrentUserResponse"
                 }
               }
             }
           },
-          "400": {
-            "description": "Bad request (invalid request body)",
+          "401": {
+            "description": "Authorization (Unauthorized)",
             "content": {}
           },
-          "409": {
-            "description": "Provided email already exists",
+          "500": {
+            "description": "Server (server error)",
             "content": {}
           }
         }
@@ -163,42 +148,45 @@
         "summary": "Edit user information",
         "parameters": [
           {
-            "name": "body",
+            "name": "id",
             "in": "path",
             "description": "Updated user information",
-            "required": true,
             "type": "string"
           }
         ],
         "security": [{ "Bearer": [] }],
         "requestBody": {
-          "description": "User current object",
+          "description": "Edit user information",
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/RegistrationRequest"
+                "$ref": "#/components/schemas/EditUserinfoRequest"
               }
             }
           }
         },
         "responses": {
-          "201": {
+          "200": {
             "description": "User information updated successfully",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/RegistrationResponse"
+                  "$ref": "#/components/schemas/EditUserinfoResponse"
                 }
               }
             }
           },
           "400": {
-            "description": "Bad request (invalid request body)",
+            "description": "Bad request (invalid input data)",
             "content": {}
           },
-          "409": {
-            "description": "Provided email already exists",
+          "401": {
+            "description": "Authorization (Unauthorized)",
+            "content": {}
+          },
+          "404": {
+            "description": "User not found (No user defined)",
             "content": {}
           }
         }
@@ -222,9 +210,9 @@
           "description": "User current object",
           "required": true,
           "content": {
-            "application/json": {
+            "multipart/form-data": {
               "schema": {
-                "$ref": "#/components/schemas/RegistrationRequest"
+                "$ref": "#/components/schemas/EditUserAvatarRequest"
               }
             }
           }
@@ -235,13 +223,17 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/RegistrationResponse"
+                  "$ref": "#/components/schemas/EditUserAvatarResponse"
                 }
               }
             }
           },
           "400": {
             "description": "Bad request (invalid request body)",
+            "content": {}
+          },
+          "401": {
+            "description": "Authorization (Unauthorized)",
             "content": {}
           }
         }
@@ -253,35 +245,16 @@
         "summary": "User logout",
         "parameters": [],
         "security": [{ "Bearer": [] }],
-        "requestBody": {
-          "description": "User logout object",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/RegistrationRequest"
-              }
-            }
-          }
-        },
         "responses": {
-          "201": {
+          "200": {
             "description": "Successful operation",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/RegistrationResponse"
+                  "$ref": "#/components/schemas/UserLogoutResponse"
                 }
               }
             }
-          },
-          "400": {
-            "description": "Bad request (invalid request body)",
-            "content": {}
-          },
-          "409": {
-            "description": "Provided email already exists",
-            "content": {}
           }
         }
       }
@@ -298,7 +271,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/RegistrationRequest"
+                "$ref": "#/components/schemas/UserRefreshTokenRequest"
               }
             }
           }
@@ -309,7 +282,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/RegistrationResponse"
+                  "$ref": "#/components/schemas/UserRefreshTokenResponse"
                 }
               }
             }
@@ -318,8 +291,8 @@
             "description": "Bad request (invalid request body)",
             "content": {}
           },
-          "409": {
-            "description": "Provided email already exists",
+          "401": {
+            "description": "Authorization (Unauthorized)",
             "content": {}
           }
         }
@@ -1366,29 +1339,31 @@
       },
       "RegistrationRequest": {
         "type": "object",
-        "required": ["email", "password", "name"],
+        "required": ["name", "email", "password"],
         "properties": {
           "name": {
             "type": "string",
-            "description": "User's email",
-            "example": "user"
+            "description": "User's name",
+            "pattern": "^[a-zA-Zа-яА-ЯёЁіїєґҐ ]{2,16}$",
+            "example": "Alex"
           },
           "email": {
             "type": "string",
             "description": "User's email",
+            "pattern": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
             "format": "email",
-            "example": "user22@gmail.com"
+            "example": "user@gmail.com"
           },
           "password": {
             "type": "string",
             "description": "User's password",
-            "example": "User123"
+            "pattern": "^(?=.*[a-z])(?=.*[A-Z])(?=.*d)[a-zA-Zd]{6,16}$/",
+            "example": "Qwerty123"
           }
         }
       },
       "RegistrationResponse": {
-        "type": "array",
-        "items": {
+        "user": {
           "type": "object",
           "properties": {
             "email": {
@@ -1398,18 +1373,13 @@
               "example": "user22@gmail.com"
             },
             "name": {
-              "type": "String",
+              "type": "string",
               "description": "User's name",
-              "example": "user"
+              "example": "Alex"
             }
           }
         },
-        "example": [
-          {
-            "name": "user",
-            "email": "user22@gmail.com"
-          }
-        ]
+        "example": { "user": { "email": "example@gmail.com", "name": "Alex" } }
       },
       "LoginRequest": {
         "type": "object",
@@ -1418,72 +1388,249 @@
           "email": {
             "type": "string",
             "description": "User's email",
+            "pattern": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
             "format": "email",
-            "example": "user22@gmail.com"
+            "example": "user@gmail.com"
           },
           "password": {
             "type": "string",
             "description": "User's password",
-            "example": "User123"
+            "pattern": "^(?=.*[a-z])(?=.*[A-Z])(?=.*d)[a-zA-Zd]{6,16}$/",
+            "example": "Qwerty123"
           }
         }
       },
       "LoginResponse": {
-        "type": "array",
-        "items": {
+        "user": {
           "type": "object",
           "properties": {
             "email": {
               "type": "string",
               "description": "User's email",
-              "format": "email",
-              "example": "user22@gmail.com"
+              "format": "email"
             },
             "name": {
-              "type": "String",
+              "type": "string",
               "description": "User's name",
-              "example": "user"
-            },
-            "token": {
-              "type": "String",
-              "description": "User's token",
-              "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1MWMyMWM0YmM0NmEyNjNhZWM0ODRkNSIsImlhdCI6MTY5NjM0Mjc2NSwiZXhwIjoxNjk2NDI1NTY1fQ.ABk8ZxzF5-moXIl3qBkJEsPb4hLop-Asyv49QZg9q3o"
+              "example": "Alex"
             }
+          },
+          "token": {
+            "type": "string",
+            "description": "User's token",
+            "example": "<KEY>"
+          },
+          "refreshToken": {
+            "type": "string",
+            "description": "User's refreshToken token",
+            "example": "<KEY>"
           }
         },
-        "example": [
-          {
-            "name": "user",
-            "email": "user22@gmail.com"
-          }
-        ]
+        "example": {
+          "user": { "email": "example@gmail.com", "name": "Alex" },
+          "token": "<KEY>",
+          "refreshToken": "<KEY>"
+        }
       },
-      "userInfoResponse": {
+      "GetCurrentUserResponse": {
         "type": "object",
-        "items": {
-          "type": "object",
-          "properties": {}
-        },
-        "example": [
-          {
-            "name": "user",
-            "email": "user22@gmail.com",
-            "birthday": "01-01-1970",
-            "phone": "+380123456789",
-            "city": "Kyiv",
-            "avatarURL": "https://res.cloudinary.com/dofau6dtf/image/upload/v1695541073/default_avatar/Photo_default_twk9o4.jpg",
-            "pets": [],
-            "favorites": []
+        "properties": {
+          "avatarURL": {
+            "type": "string",
+            "description": "User's avatarURL"
+          },
+          "name": {
+            "type": "string",
+            "description": "User's name",
+            "pattern": "^[a-zA-Zа-яА-ЯёЁіїєґҐ ]{2,16}$"
+          },
+          "email": {
+            "type": "string",
+            "description": "User's email",
+            "pattern": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
+          },
+          "phone": {
+            "type": "string",
+            "description": "User's phone",
+            "pattern": "^\\+380\\d{9}$"
+          },
+          "birthday": {
+            "type": "string",
+            "description": "User's birthday",
+            "pattern": "^\\d{2}-\\d{2}-\\d{4}$"
+          },
+          "city": {
+            "type": "string",
+            "description": "User's city",
+            "pattern": "^[A-Za-z\\s]+$"
+          },
+          "favorites": {
+            "type": "array",
+            "description": "User's favorites"
           }
-        ]
+        },
+        "example": {
+          "avatarURL": "https://res.cloudinary.com/dofau6dtf/image/upload/v1695541073/default_avatar/Photo_default_twk9o4.jpg",
+          "name": "Patrick",
+          "email": "dog",
+          "phone": "+380509876543",
+          "birthday": "12-12-2020",
+          "city": "Kyiv",
+          "favorites": []
+        }
+      },
+      "EditUserinfoRequest": {
+        "type": "object",
+        "required": ["id"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Current user's id"
+          },
+          "name": {
+            "type": "string",
+            "description": "User's name",
+            "pattern": "^[a-zA-Zа-яА-ЯёЁіїєґҐ ]{2,16}$"
+          },
+          "email": {
+            "type": "string",
+            "description": "User's email",
+            "pattern": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
+          },
+          "phone": {
+            "type": "string",
+            "description": "User's phone",
+            "pattern": "^\\+380\\d{9}$"
+          },
+          "birthday": {
+            "type": "string",
+            "description": "User's birthday",
+            "required": "true",
+            "pattern": "^\\d{2}-\\d{2}-\\d{4}$"
+          },
+          "city": {
+            "type": "string",
+            "description": "User's city",
+            "pattern": "^[A-Za-z\\s]+$"
+          }
+        },
+        "example": {
+          "id": "23055jnb2n3b43h4jbhjb4",
+          "name": "Patrick",
+          "email": "dog",
+          "phone": "+380509876543",
+          "birthday": "12-12-2020",
+          "city": "Kyiv"
+        }
+      },
+      "EditUserinfoResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "User's id"
+          },
+          "name": {
+            "type": "string",
+            "description": "User's name",
+            "pattern": "^[a-zA-Zа-яА-ЯёЁіїєґҐ ]{2,16}$"
+          },
+          "email": {
+            "type": "string",
+            "description": "User's email",
+            "pattern": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
+          },
+          "phone": {
+            "type": "string",
+            "description": "User's phone",
+            "pattern": "^\\+380\\d{9}$"
+          },
+          "birthday": {
+            "type": "string",
+            "description": "User's birthday",
+            "pattern": "^\\d{2}-\\d{2}-\\d{4}$"
+          },
+          "city": {
+            "type": "string",
+            "description": "User's city",
+            "pattern": "^[A-Za-z\\s]+$"
+          }
+        },
+        "example": {
+          "id": "23055jnb2n3b43h4jbhjb4",
+          "name": "JohnSmith",
+          "email": "cat",
+          "phone": "+380509666666",
+          "birthday": "01-01-2018",
+          "city": "Brovary"
+        }
+      },
+      "EditUserAvatarRequest": {
+        "type": "object",
+        "properties": {
+          "avatarURL": {
+            "type": "file"
+          }
+        },
+        "example": {
+          "avatarURL": "https://res.cloudinary.com/dofau6dtf/image/upload/v1695541073/default_avatar/Photo_default_twk9o4.jpg"
+        }
+      },
+      "EditUserAvatarResponse": {
+        "type": "object",
+        "properties": {
+          "avatarURL": {
+            "type": "string",
+            "description": "User's updated Avatar"
+          }
+        },
+        "example": {
+          "avatarURL": "www.example.com"
+        }
+      },
+      "UserLogoutResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "logout success"
+          }
+        },
+        "example": {
+          "message": "logout success"
+        }
+      },
+      "UserRefreshTokenRequest": {
+        "type": "object",
+        "properties": {
+          "refreshToken": {
+            "type": "string",
+            "description": "Refresh token to use for token refresh"
+          }
+        },
+        "example": {
+          "refreshToken": "<KEY>"
+        }
+      },
+      "UserRefreshTokenResponse": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "New access token"
+          }
+        },
+        "example": {
+          "token": "<KEY>"
+        }
       }
-    },
-    "securitySchemes": {
-      "Bearer": {
-        "type": "http",
-        "scheme": "bearer",
-        "bearerFormat": "JWT"
-      }
+    }
+  },
+  "securitySchemes": {
+    "Bearer": {
+      "type": "http",
+      "scheme": "bearer",
+      "bearerFormat": "JWT"
     }
   }
 }
