@@ -4,8 +4,10 @@ const { URL } = require("url");
 const { User } = require("../models/user");
 const RefreshToken = require("../models/sessionId");
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 
 const { ctrlWrapper, HttpError } = require("../helpers");
+const generateRandomPassword = require("../helpers/randomPassword");
 
 const {
   GOOGLE_CLIENT_ID,
@@ -14,7 +16,6 @@ const {
   BASE_URL,
   SECRET_KEY,
   REFRESH_SECRET_KEY,
-  FRONTEND_URL_FULL,
 } = process.env;
 
 const googleAuth = async (req, res, next) => {
@@ -59,39 +60,85 @@ const googleRedirect = async (req, res, next) => {
       Authorization: `Bearer ${tokenData.data.access_token}`,
     },
   });
-  // console.log(userData);
+  console.log(userData);
 
   if (!userData || !userData.data || !userData.data.email) {
     throw HttpError(401, "Unable to get user data from Google");
   }
-  const { email, name } = userData.data;
+  const { email, name, picture } = userData.data;
   const user = await User.findOne({ email });
 
-  if (!user) {
-    await User.create({ name, email });
+  if (user) {
+    const { name, email } = user;
+    console.log(name);
+    console.log(email);
+    const payload = {
+      id: user._id,
+    };
+
+    const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "23h" });
+    console.log("token");
+    const session = await RefreshToken.create({ userId: user._id });
+    await User.findByIdAndUpdate(user._id, { token, sessionId: session._id });
+
+    const payloadSession = {
+      userId: user._id,
+      sessionId: session._id,
+    };
+
+    const refreshToken = jwt.sign(payloadSession, REFRESH_SECRET_KEY, {
+      expiresIn: "30d",
+    });
+    console.log("refreshToken");
+    return res.redirect(
+      `${FRONTEND_URL}/public?name=${encodeURIComponent(
+        name
+      )}&email=${encodeURIComponent(email)}&token=${encodeURIComponent(
+        token
+      )}&refreshToken=${encodeURIComponent(refreshToken)}`
+    );
   }
-  console.log("check");
+  const randomPassword = generateRandomPassword();
+  const password = await bcrypt.hash(randomPassword, 10);
+  const newUser = await User.create({
+    name,
+    email,
+    password,
+    avatarURL: picture,
+  });
+  console.log(newUser.name);
+  console.log(newUser.email);
+
   const payload = {
-    id: user._id,
+    id: newUser._id,
   };
+  console.log("payload ");
+
   const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "1h" });
+  const session = await RefreshToken.create({ userId: newUser._id });
+  await User.findByIdAndUpdate(newUser._id, { token, sessionId: session._id });
+
   console.log("token");
+  console.log("session");
+
   const payloadSession = {
-    userId: user._id,
+    userId: newUser._id,
+    sessionId: session._id,
   };
 
-  await RefreshToken.create({ userId: user._id });
+  console.log("payloadSession");
+
   const refreshToken = jwt.sign(payloadSession, REFRESH_SECRET_KEY, {
     expiresIn: "30d",
   });
-  console.log(refreshToken);
+  console.log("refreshToken");
 
   return res.redirect(
-    `${FRONTEND_URL}/public?email=${encodeURIComponent(
-      email
-    )}&token=${encodeURIComponent(token)}&refreshToken=${encodeURIComponent(
-      refreshToken
-    )}`
+    `${FRONTEND_URL}/public?name=${encodeURIComponent(
+      name
+    )}&email=${encodeURIComponent(email)}&token=${encodeURIComponent(
+      token
+    )}&refreshToken=${encodeURIComponent(refreshToken)}`
   );
 };
 

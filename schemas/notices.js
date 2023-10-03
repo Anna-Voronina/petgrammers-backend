@@ -22,7 +22,7 @@ const addNoticeSchema = Joi.object({
   price: Joi.number().when("category", {
     is: "sell",
     then: Joi.number().min(1).required(),
-    otherwise: Joi.number(),
+    otherwise: Joi.forbidden(),
   }),
   comments: Joi.string(),
   favorite: Joi.boolean(),
