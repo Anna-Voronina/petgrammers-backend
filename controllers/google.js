@@ -88,7 +88,7 @@ const googleRedirect = async (req, res, next) => {
     });
 
     return res.redirect(
-      `${FRONTEND_URL}/public?name=${encodeURIComponent(
+      `${FRONTEND_URL}/googleAuth?name=${encodeURIComponent(
         name
       )}&email=${encodeURIComponent(email)}&token=${encodeURIComponent(
         token
@@ -122,7 +122,7 @@ const googleRedirect = async (req, res, next) => {
   });
 
   return res.redirect(
-    `${FRONTEND_URL}/?name=${encodeURIComponent(
+    `${FRONTEND_URL}/googleAuth?name=${encodeURIComponent(
       name
     )}&email=${encodeURIComponent(email)}&token=${encodeURIComponent(
       token
