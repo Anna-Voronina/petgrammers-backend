@@ -122,7 +122,7 @@ const googleRedirect = async (req, res, next) => {
   });
 
   return res.redirect(
-    `${FRONTEND_PROJECT}/?name=${encodeURIComponent(
+    `${FRONTEND_URL}/?name=${encodeURIComponent(
       name
     )}&email=${encodeURIComponent(email)}&token=${encodeURIComponent(
       token
