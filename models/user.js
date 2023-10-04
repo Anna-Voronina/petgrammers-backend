@@ -4,17 +4,9 @@ const { handleMongooseError } = require("../helpers");
 
 const { default: mongoose } = require("mongoose");
 
-const nameRegexp = /^[a-zA-Zа-яА-ЯёЁіїєґҐ ]{2,16}$/;
-
-// const passwordRegexp = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{6,16}$/;
+const nameRegexp = /^[a-zA-Zа-яА-ЯёЁіїєґҐ ]{2,50}$/;
 
 const emailRegexp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-
-// const phoneRegexp = /^\+380\d{9}$/;
-
-// const birthdayRegexp = /^\d{2}-\d{2}-\d{4}$/;
-
-// const cityRegexp = /^[A-Za-z\s]+$/;
 
 const userSchema = new Schema(
   {
