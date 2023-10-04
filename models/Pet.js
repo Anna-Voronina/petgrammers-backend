@@ -9,7 +9,7 @@ const petSchema = new Schema(
     name: {
       type: String,
       minlength: 2,
-      maxlength: 16,
+      maxlength: 30,
       required: [true, "Name is required"],
     },
     date: {
@@ -25,7 +25,7 @@ const petSchema = new Schema(
     type: {
       type: String,
       minlength: 2,
-      maxlength: 16,
+      maxlength: 50,
       required: [true, "Type is required"],
     },
     file: {

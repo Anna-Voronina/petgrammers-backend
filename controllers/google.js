@@ -16,6 +16,7 @@ const {
   BASE_URL,
   SECRET_KEY,
   REFRESH_SECRET_KEY,
+  FRONTEND_PROJECT,
 } = process.env;
 
 const googleAuth = async (req, res, next) => {
@@ -61,7 +62,6 @@ const googleRedirect = async (req, res, next) => {
     },
   });
   console.log(userData);
-
   if (!userData || !userData.data || !userData.data.email) {
     throw HttpError(401, "Unable to get user data from Google");
   }
@@ -70,14 +70,11 @@ const googleRedirect = async (req, res, next) => {
 
   if (user) {
     const { name, email } = user;
-    console.log(name);
-    console.log(email);
     const payload = {
       id: user._id,
     };
 
     const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "23h" });
-    console.log("token");
     const session = await RefreshToken.create({ userId: user._id });
     await User.findByIdAndUpdate(user._id, { token, sessionId: session._id });
 
@@ -89,7 +86,7 @@ const googleRedirect = async (req, res, next) => {
     const refreshToken = jwt.sign(payloadSession, REFRESH_SECRET_KEY, {
       expiresIn: "30d",
     });
-    console.log("refreshToken");
+
     return res.redirect(
       `${FRONTEND_URL}/public?name=${encodeURIComponent(
         name
@@ -106,35 +103,26 @@ const googleRedirect = async (req, res, next) => {
     password,
     avatarURL: picture,
   });
-  console.log(newUser.name);
-  console.log(newUser.email);
 
   const payload = {
     id: newUser._id,
   };
-  console.log("payload ");
 
   const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "1h" });
   const session = await RefreshToken.create({ userId: newUser._id });
   await User.findByIdAndUpdate(newUser._id, { token, sessionId: session._id });
-
-  console.log("token");
-  console.log("session");
 
   const payloadSession = {
     userId: newUser._id,
     sessionId: session._id,
   };
 
-  console.log("payloadSession");
-
   const refreshToken = jwt.sign(payloadSession, REFRESH_SECRET_KEY, {
     expiresIn: "30d",
   });
-  console.log("refreshToken");
 
   return res.redirect(
-    `${FRONTEND_URL}/public?name=${encodeURIComponent(
+    `${FRONTEND_PROJECT}/?name=${encodeURIComponent(
       name
     )}&email=${encodeURIComponent(email)}&token=${encodeURIComponent(
       token
