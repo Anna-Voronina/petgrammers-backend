@@ -16,7 +16,6 @@ const {
   BASE_URL,
   SECRET_KEY,
   REFRESH_SECRET_KEY,
-  FRONTEND_PROJECT,
 } = process.env;
 
 const googleAuth = async (req, res, next) => {
@@ -88,7 +87,7 @@ const googleRedirect = async (req, res, next) => {
     });
 
     return res.redirect(
-      `${FRONTEND_URL}/googleAuth?name=${encodeURIComponent(
+      `${FRONTEND_URL}googleAuth?name=${encodeURIComponent(
         name
       )}&email=${encodeURIComponent(email)}&token=${encodeURIComponent(
         token
@@ -122,7 +121,7 @@ const googleRedirect = async (req, res, next) => {
   });
 
   return res.redirect(
-    `${FRONTEND_URL}/googleAuth?name=${encodeURIComponent(
+    `${FRONTEND_URL}googleAuth?name=${encodeURIComponent(
       name
     )}&email=${encodeURIComponent(email)}&token=${encodeURIComponent(
       token
