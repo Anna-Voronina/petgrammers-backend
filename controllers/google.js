@@ -16,6 +16,7 @@ const {
   BASE_URL,
   SECRET_KEY,
   REFRESH_SECRET_KEY,
+  FRONTEND_PROJECT,
 } = process.env;
 
 const googleAuth = async (req, res, next) => {
@@ -60,7 +61,7 @@ const googleRedirect = async (req, res, next) => {
       Authorization: `Bearer ${tokenData.data.access_token}`,
     },
   });
-
+  console.log(userData);
   if (!userData || !userData.data || !userData.data.email) {
     throw HttpError(401, "Unable to get user data from Google");
   }
@@ -121,7 +122,7 @@ const googleRedirect = async (req, res, next) => {
   });
 
   return res.redirect(
-    `${FRONTEND_URL}/public?name=${encodeURIComponent(
+    `${FRONTEND_PROJECT}/?name=${encodeURIComponent(
       name
     )}&email=${encodeURIComponent(email)}&token=${encodeURIComponent(
       token
