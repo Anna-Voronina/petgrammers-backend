@@ -64,7 +64,7 @@ const googleRedirect = async (req, res, next) => {
   if (!userData || !userData.data || !userData.data.email) {
     throw HttpError(401, "Unable to get user data from Google");
   }
-  const { email, name, picture } = userData.data;
+  const { email, name } = userData.data;
   const user = await User.findOne({ email });
 
   if (user) {
@@ -100,7 +100,6 @@ const googleRedirect = async (req, res, next) => {
     name,
     email,
     password,
-    avatarURL: picture,
   });
 
   const payload = {
