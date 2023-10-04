@@ -1,6 +1,6 @@
 const Joi = require("joi");
 
-const nameRegexp = /^[a-zA-Zа-яА-ЯёЁіїєґҐ ]{2,16}$/;
+const nameRegexp = /^[a-zA-Zа-яА-ЯёЁіїєґҐ ]{2,50}$/;
 
 const passwordRegexp = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{6,16}$/;
 
