@@ -353,3 +353,8 @@ GET /favicon.ico 03-10-23_10:23:52
 PATCH /api/auth/editUserForm 03-10-23_06:13:29
 PATCH /api/auth/editUserForm 03-10-23_06:13:30
 PATCH /api/auth/editUserForm 03-10-23_06:13:44
+GET /api/notices/651e6d7a0199ac7981b7504c/favorite 05-10-23_11:04:00
+GET /api/notices/651e6f7a5bae56d249f26860/favorite 05-10-23_11:11:11
+PATCH /api/notices/get/favorites 05-10-23_11:14:26
+DELETE /api/notices/get/favorites 05-10-23_11:50:19
+POST /api/auth 05-10-23_11:55:03
