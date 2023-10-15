@@ -10,7 +10,10 @@ mongoose
   .connect(DB_HOST)
   .then(() => {
     console.log("Database connection successful");
+
     app.listen(PORT);
+    const server = app.listen(PORT);
+    console.log(server);
   })
   .catch((error) => {
     console.log(error.message);
