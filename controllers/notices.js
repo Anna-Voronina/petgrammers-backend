@@ -61,6 +61,7 @@ const getNoticeById = async (req, res, next) => {
     file,
     title,
     category,
+    price,
   } = notice;
   const user = await User.findById(owner);
   const { email, phone } = user;
@@ -78,6 +79,7 @@ const getNoticeById = async (req, res, next) => {
     title,
     phone,
     email,
+    price,
   };
   res.status(200).json(noticeResp);
 };
@@ -223,15 +225,30 @@ const addOwnNotice = async (req, res, next) => {
   res.status(201).json(data);
 };
 
-//Видалити власне оголошення
 const deleteOwnNotice = async (req, res, next) => {
   const { id } = req.params;
-  const notice = await Notice.findByIdAndDelete(id);
-  if (notice) {
-    res.json(notice).status(204);
-  } else {
-    throw HttpError(404, "Id not found");
+
+  const notice = await Notice.findById(id);
+  if (!notice) {
+    return res.status(404).json({ error: "Notice not found" });
   }
+
+  const users = await User.find();
+
+  for (const user of users) {
+    const index = user.favorites.findIndex(
+      (favorite) => favorite._id.toString() === id
+    );
+
+    if (index !== -1) {
+      user.favorites.splice(index, 1);
+      await user.save();
+    }
+  }
+
+  await Notice.findByIdAndDelete(id);
+
+  res.status(204).send();
 };
 
 //Дістати всі оголошення
